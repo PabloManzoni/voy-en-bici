@@ -17,8 +17,8 @@ export default defineConfig({
         description: 'GO o NO GO para tus recorridos en bici, según el clima.',
         lang: 'es',
         display: 'standalone',
-        theme_color: '#f4f6f8',
-        background_color: '#f4f6f8',
+        theme_color: '#14161d',
+        background_color: '#14161d',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },

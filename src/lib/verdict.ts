@@ -66,7 +66,7 @@ export const PRESETS: Record<PresetId, Preset> = {
   flojo: {
     id: 'flojo',
     nombre: 'Flojo',
-    emoji: '🙂',
+    emoji: '💅',
     descripcion: 'Salgo solo si está lindo. Ni llovizna en todo el día, ni viento pesado, ni frío.',
     umbrales: {
       vientoMax: 30, rafagaMax: 45, tempMin: 10, tempMax: 30,
@@ -78,7 +78,7 @@ export const PRESETS: Record<PresetId, Preset> = {
     id: 'promedio',
     nombre: 'Promedio',
     emoji: '🚴',
-    descripcion: 'Me banco fresco y algo de viento, pero si llueve en mi horario, no salgo.',
+    descripcion: 'Soy un pibe común: me banco fresco y algo de viento, pero si llueve en mi horario, no salgo.',
     umbrales: {
       vientoMax: 40, rafagaMax: 50, tempMin: 8, tempMax: 32,
       probLluviaFuerte: 40, probLluviaLeve: 40, probLlovizna: 60,
@@ -88,7 +88,7 @@ export const PRESETS: Record<PresetId, Preset> = {
   extremo: {
     id: 'extremo',
     nombre: 'Extremo',
-    emoji: '🔥',
+    emoji: '🥚',
     descripcion: 'Salgo casi siempre, llovizna incluida. Me frenan las tormentas, las ráfagas fuertes y la lluvia en serio.',
     umbrales: {
       vientoMax: 50, rafagaMax: 60, tempMin: 5, tempMax: 35,

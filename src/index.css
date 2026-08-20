@@ -1,18 +1,26 @@
 :root {
-  --bg: #f4f6f8;
-  --card: #ffffff;
-  --ink: #0b1220;
-  --muted: #6b7280;
-  --line: #e6eaef;
-  --go: #15803d;
-  --go-bg: #e9f7ee;
-  --go-line: #bbe5c8;
-  --nogo: #b91c1c;
-  --nogo-bg: #fdeeee;
-  --nogo-line: #f3c8c8;
-  --accent: #075985;
-  --radius: 18px;
-  --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 4px 14px rgba(15, 23, 42, 0.06);
+  color-scheme: dark;
+  --bg: #14161d;
+  --card: #1b1f2a;
+  --ink: #eceef6;
+  --muted: #99a2b6;
+  --line: #2a2f3e;
+
+  /* pasteles */
+  --mint: #9fe0b6;
+  --mint-ink: #0f2418;
+  --mint-soft: rgba(159, 224, 182, 0.1);
+  --mint-line: rgba(159, 224, 182, 0.32);
+  --rose: #f2a9b7;
+  --rose-ink: #33101b;
+  --rose-soft: rgba(242, 169, 183, 0.1);
+  --rose-line: rgba(242, 169, 183, 0.3);
+  --sky: #a8c7ec;
+  --lav: #c5bdf1;
+  --lav-soft: rgba(197, 189, 241, 0.14);
+  --amber: #f2d3a2;
+
+  --radius: 20px;
 }
 
 * {
@@ -28,8 +36,8 @@ body {
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    sans-serif;
+  font-family: ui-rounded, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -56,6 +64,9 @@ body {
   margin: 0;
   flex: 1;
   letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .topbar-title {
@@ -67,6 +78,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: block;
 }
 
 .topbar-sub {
@@ -77,20 +89,21 @@ body {
 .icon-btn {
   background: none;
   border: none;
-  font-size: 20px;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 12px;
   cursor: pointer;
-  color: var(--ink);
+  color: var(--muted);
+  font-size: 19px;
   flex-shrink: 0;
 }
 
 .icon-btn:active {
   background: var(--line);
+  color: var(--ink);
 }
 
 /* ── Botones ─────────────────────────────── */
@@ -104,28 +117,41 @@ body {
   font-weight: 700;
   cursor: pointer;
   border: none;
+  font-family: inherit;
 }
 
 .btn-primary {
-  background: var(--ink);
-  color: #fff;
+  background: var(--mint);
+  color: var(--mint-ink);
 }
 
 .btn-primary:disabled {
-  opacity: 0.35;
+  opacity: 0.3;
   cursor: default;
 }
 
 .btn-secondary {
-  background: var(--card);
+  background: transparent;
   color: var(--ink);
-  border: 1.5px dashed #c3ccd6;
+  border: 1.5px dashed #3a4152;
 }
 
 .btn-danger {
   background: none;
-  color: var(--nogo);
+  color: var(--rose);
   font-weight: 600;
+}
+
+.btn-mini {
+  border: none;
+  border-radius: 12px;
+  background: var(--mint);
+  color: var(--mint-ink);
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  padding: 10px 16px;
+  cursor: pointer;
 }
 
 /* ── Home ────────────────────────────────── */
@@ -145,9 +171,9 @@ body {
   border-radius: var(--radius);
   padding: 14px 16px;
   cursor: pointer;
-  box-shadow: var(--shadow);
   font: inherit;
   color: inherit;
+  font-family: inherit;
 }
 
 .route-card-main {
@@ -162,7 +188,6 @@ body {
 
 .route-sub {
   font-size: 14px;
-  color: var(--ink);
   margin-top: 2px;
 }
 
@@ -172,14 +197,19 @@ body {
 }
 
 .edit-link {
-  font-size: 16px;
-  padding: 6px;
-  border-radius: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  color: var(--muted);
+  display: inline-flex;
+}
+
+.edit-link:active {
+  background: var(--line);
 }
 
 .chevron {
   color: var(--muted);
-  font-size: 22px;
+  display: inline-flex;
 }
 
 .empty {
@@ -192,13 +222,13 @@ body {
 }
 
 .empty-emoji {
-  font-size: 56px;
+  color: var(--lav);
+  opacity: 0.9;
 }
 
 .empty p {
   margin: 0;
   font-size: 17px;
-  color: var(--ink);
   max-width: 300px;
   line-height: 1.45;
 }
@@ -219,7 +249,6 @@ body {
 .field-label {
   font-size: 14px;
   font-weight: 700;
-  color: var(--ink);
 }
 
 input[type='text'],
@@ -231,6 +260,7 @@ select {
   background: var(--card);
   font-size: 16px;
   color: var(--ink);
+  font-family: inherit;
   appearance: none;
 }
 
@@ -249,6 +279,7 @@ select {
   font-weight: 600;
   cursor: pointer;
   color: var(--ink);
+  font-family: inherit;
 }
 
 .chip small {
@@ -257,23 +288,23 @@ select {
 }
 
 .chip-on {
-  background: var(--ink);
-  color: #fff;
-  border-color: var(--ink);
+  background: var(--lav);
+  color: #221d3a;
+  border-color: var(--lav);
 }
 
 .chip-on small {
-  color: #cbd5e1;
+  color: #4a4370;
 }
 
 .form-error {
-  color: var(--nogo);
+  color: var(--rose);
   font-size: 14px;
   margin: -6px 0 0;
 }
 
 .form-preview {
-  color: var(--accent);
+  color: var(--sky);
   font-size: 14px;
   margin: -6px 0 0;
   font-weight: 600;
@@ -285,24 +316,23 @@ select {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 18px;
-  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .day-go {
-  border-color: var(--go-line);
-  background: linear-gradient(180deg, var(--go-bg), var(--card) 55%);
+  border-color: var(--mint-line);
+  background: linear-gradient(180deg, var(--mint-soft), var(--card) 60%);
 }
 
 .day-nogo {
-  border-color: var(--nogo-line);
-  background: linear-gradient(180deg, var(--nogo-bg), var(--card) 55%);
+  border-color: var(--rose-line);
+  background: linear-gradient(180deg, var(--rose-soft), var(--card) 60%);
 }
 
 .day-past {
-  opacity: 0.72;
+  opacity: 0.65;
 }
 
 .day-head {
@@ -313,10 +343,10 @@ select {
 }
 
 .day-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
 
 .day-title .muted {
@@ -327,27 +357,27 @@ select {
 }
 
 .badge {
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 0.01em;
-  padding: 6px 16px;
+  font-size: 17px;
+  font-weight: 800;
+  padding: 8px 16px;
   border-radius: 999px;
+  white-space: nowrap;
 }
 
 .badge-go {
-  background: var(--go);
-  color: #fff;
+  background: var(--mint);
+  color: var(--mint-ink);
 }
 
 .badge-nogo {
-  background: var(--nogo);
-  color: #fff;
+  background: var(--rose);
+  color: var(--rose-ink);
 }
 
 .badge-past {
   background: var(--line);
   color: var(--muted);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -361,8 +391,8 @@ select {
 .day-sub {
   margin: 0;
   font-size: 15px;
-  line-height: 1.5;
-  color: #374151;
+  line-height: 1.55;
+  color: #c3c9d9;
 }
 
 .tramos {
@@ -376,25 +406,25 @@ select {
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 10px 12px;
 }
 
 .tramo-bad {
-  border-color: var(--nogo-line);
+  border-color: var(--rose-line);
 }
 
 .tramo-off {
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
 .tramo-dir {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--muted);
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
 .tramo-body {
@@ -412,25 +442,48 @@ select {
 }
 
 .tramo-bad .tramo-detalle {
-  color: var(--nogo);
+  color: var(--rose);
   font-weight: 600;
 }
 
 .tramo-mark {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 900;
 }
 
-.tramo-bad .tramo-mark {
-  color: var(--nogo);
+.tramo .tramo-mark {
+  color: var(--mint);
 }
 
-/* ── Strip del día ───────────────────────── */
+.tramo-bad .tramo-mark,
+.tramo-off .tramo-mark {
+  color: var(--muted);
+}
+
+.tramo-bad .tramo-mark {
+  color: var(--rose);
+}
+
+/* ── Mapa del día ────────────────────────── */
 .strip {
   display: flex;
   margin-top: 4px;
   border-top: 1px solid var(--line);
   padding-top: 10px;
+  gap: 4px;
+}
+
+/* lapsos: horas consecutivas iguales unidas en una sola banda */
+.strip-seg {
+  display: flex;
+  border-radius: 11px;
+  padding: 3px 1px;
+  min-width: 0;
+}
+
+/* las horas buenas no dicen nada; solo el tramo feo se tiñe, sutil */
+.seg-bad {
+  background: rgba(242, 169, 183, 0.13);
 }
 
 .strip-col {
@@ -438,24 +491,72 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
-  padding: 4px 0 2px;
+  gap: 2px;
+  padding: 3px 0 1px;
   border-radius: 8px;
   min-width: 0;
 }
 
-.strip-col-on {
-  background: #eef4fb;
-  box-shadow: inset 0 0 0 1px #d3e2f2;
-}
-
-.strip-emoji {
-  font-size: 13px;
-}
 
 .strip-temp {
   font-size: 10.5px;
   font-weight: 700;
+}
+
+/* flechas largas de ida (→, arriba) y vuelta (←, abajo) sobre su rango horario */
+.fr {
+  position: relative;
+  width: 100%;
+  height: 9px;
+  margin-top: 1px;
+}
+
+.fr-ida,
+.fr-vuelta {
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(154, 163, 184, 0.42);
+}
+
+.fr-ida {
+  top: 0;
+}
+
+.fr-vuelta {
+  bottom: 0;
+}
+
+.fr-first {
+  left: 2px;
+}
+
+.fr-last {
+  right: 2px;
+}
+
+.fr-ida.fr-last::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 5px solid rgba(154, 163, 184, 0.6);
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+}
+
+.fr-vuelta.fr-first::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right: 5px solid rgba(154, 163, 184, 0.6);
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
 }
 
 .strip-hour {
@@ -490,15 +591,16 @@ select {
   cursor: pointer;
   font: inherit;
   color: inherit;
+  font-family: inherit;
 }
 
 .preset-on {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 1px var(--ink);
+  border-color: var(--lav);
+  background: var(--lav-soft);
 }
 
 .preset-emoji {
-  font-size: 26px;
+  font-size: 24px;
 }
 
 .preset-body {
@@ -519,11 +621,13 @@ select {
 }
 
 .preset-check {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 900;
+  color: var(--lav);
 }
 
-.thresholds {
+.thresholds,
+.install-card {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -555,6 +659,37 @@ select {
   margin: 10px 0 0;
 }
 
+.install-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.install-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.install-head svg {
+  color: var(--sky);
+}
+
+.install-body {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.install-ok {
+  color: var(--mint);
+  font-weight: 700;
+  margin: 0;
+}
+
 .settings-footer,
 .footer-note {
   text-align: center;
@@ -576,6 +711,6 @@ select {
     opacity: 1;
   }
   50% {
-    opacity: 0.55;
+    opacity: 0.5;
   }
 }

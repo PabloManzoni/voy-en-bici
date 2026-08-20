@@ -1,7 +1,70 @@
+import { useEffect, useState } from 'react'
 import type { PresetId } from '../types'
 import { PRESETS } from '../lib/verdict'
 import { iaDisponible } from '../lib/ai'
 import { nav } from '../App'
+import { PhoneIcon } from './Icons'
+
+interface PromptInstalacion extends Event {
+  prompt: () => Promise<void>
+}
+
+function InstallCard() {
+  const [promptEvento, setPromptEvento] = useState<PromptInstalacion | null>(null)
+  const [instalada, setInstalada] = useState(
+    () =>
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as unknown as { standalone?: boolean }).standalone === true,
+  )
+
+  useEffect(() => {
+    const onPrompt = (e: Event) => {
+      e.preventDefault()
+      setPromptEvento(e as PromptInstalacion)
+    }
+    window.addEventListener('beforeinstallprompt', onPrompt)
+    const mq = window.matchMedia('(display-mode: standalone)')
+    const onChange = () => setInstalada(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onPrompt)
+      mq.removeEventListener('change', onChange)
+    }
+  }, [])
+
+  const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
+
+  return (
+    <div className="install-card">
+      <div className="install-head">
+        <PhoneIcon /> Llevala en el teléfono
+      </div>
+      {instalada ? (
+        <p className="install-ok">Ya está instalada en este dispositivo ✓</p>
+      ) : promptEvento ? (
+        <>
+          <p className="install-body">
+            Instalada abre al toque y tus recorridos no se borran nunca.
+          </p>
+          <button className="btn-mini" onClick={() => promptEvento.prompt()}>
+            Instalar la app
+          </button>
+        </>
+      ) : esIOS ? (
+        <p className="install-body">
+          En Safari: tocá <strong>Compartir</strong> y elegí{' '}
+          <strong>«Agregar a pantalla de inicio»</strong>. Así abre como app y tus recorridos no
+          se borran nunca.
+        </p>
+      ) : (
+        <p className="install-body">
+          En el menú del navegador elegí <strong>«Instalar app»</strong> (o «Agregar a pantalla
+          de inicio»). Así abre al toque y tus recorridos no se borran.
+        </p>
+      )}
+    </div>
+  )
+}
 
 export function Settings({
   preset,
@@ -47,9 +110,9 @@ export function Settings({
           <thead>
             <tr>
               <th></th>
-              <th>🙂 Flojo</th>
+              <th>💅 Flojo</th>
               <th>🚴 Promedio</th>
-              <th>🔥 Extremo</th>
+              <th>🥚 Extremo</th>
             </tr>
           </thead>
           <tbody>
@@ -91,8 +154,10 @@ export function Settings({
             </tr>
           </tbody>
         </table>
-        <p className="thresholds-note">⛈️ Tormenta eléctrica: NO GO para todos, sin discusión.</p>
+        <p className="thresholds-note">Tormenta eléctrica: nadie sale, sin discusión.</p>
       </details>
+
+      <InstallCard />
 
       <p className="settings-footer">
         Clima por Open-Meteo · Explicaciones {iaDisponible() ? 'redactadas con IA (Gemini)' : 'automáticas'}

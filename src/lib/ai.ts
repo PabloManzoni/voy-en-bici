@@ -65,8 +65,13 @@ async function llamarGemini(prompt: string): Promise<string | null> {
     if (!res.ok) return null
     const data = await res.json()
     const text: string | undefined = data?.candidates?.[0]?.content?.parts?.[0]?.text
-    // El badge ya dice GO/NO GO gigante: si el modelo lo repite al inicio, lo sacamos.
-    return text?.trim().replace(/^[¡!]*\s*(no\s+)?go[.!:¡]*\s*/i, '').trim() || null
+    // El badge ya da el veredicto: si el modelo lo repite al inicio, lo sacamos.
+    return (
+      text
+        ?.trim()
+        .replace(/^[¡!]*\s*(no\s+go|go|s[ií],?\s*dale|mejor\s+no)[.!:¡,]*\s*/i, '')
+        .trim() || null
+    )
   } catch {
     return null
   } finally {
@@ -92,7 +97,7 @@ export async function explicacionIA(ctx: ContextoDia): Promise<string | null> {
   const preset = PRESETS[ctx.presetId]
   const prompt = `Sos el redactor de una app uruguaya que decide si conviene ir en bicicleta según el clima.
 El veredicto YA está decidido por reglas: ${veredicto}. NO lo cuestiones ni lo cambies.
-Tu única tarea: redactar la explicación para el usuario en 1 o 2 frases cortas, español rioplatense (voseo), tono cercano y directo, sin emojis, sin saludos, sin repetir "GO" ni "NO GO".
+Tu única tarea: redactar la explicación para el usuario en 1 o 2 frases cortas, español rioplatense (voseo), tono cercano y directo, sin emojis, sin saludos. No repitas el veredicto: arriba ya hay un cartel grande que dice "Sí, dale" o "Mejor no" — vos explicá el porqué.
 Mencioná el dato concreto que más importa (viento con su dirección relativa —de frente/cruzado/de cola—, lluvia, temperatura). Si es GO con alguna advertencia (viento cerca del límite, frío), avisala en corto.
 IMPORTANTE: estás hablando de «${ctx.etiquetaDia}». Nombrá el día exactamente así — si es mañana, decí "mañana", nunca "hoy".
 Perfil del usuario: "${preset.nombre}" (${preset.descripcion}).

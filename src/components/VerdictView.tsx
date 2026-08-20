@@ -8,6 +8,7 @@ import { evalDia, PRESETS, type DiaEval } from '../lib/verdict'
 import { fraseBadge, fraseResumen, fraseTramo } from '../lib/explain'
 import { explicacionIA } from '../lib/ai'
 import { DayStrip } from './DayStrip'
+import { GearIcon } from './Icons'
 import { nav } from '../App'
 
 type Modo = 'full' | 'solo-vuelta' | 'pasado'
@@ -58,6 +59,8 @@ function DayCard({
 
   const fechaLabel = fecha.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric' })
 
+  const umbrales = PRESETS[presetId].umbrales
+
   if (modo === 'pasado') {
     return (
       <section className="day-card day-past">
@@ -65,10 +68,10 @@ function DayCard({
           <span className="day-title">
             {titulo} · <span className="muted">{fechaLabel}</span>
           </span>
-          <span className="badge badge-past">Ya fue 🌙</span>
+          <span className="badge badge-past">Ya fue</span>
         </div>
         <p className="day-sub">El día ya terminó para la bici. Mirá mañana.</p>
-        <DayStrip hours={day.hours} franjas={[fIda, fVuelta]} />
+        <DayStrip hours={day.hours} umbrales={umbrales} ida={fIda} vuelta={fVuelta} />
       </section>
     )
   }
@@ -81,7 +84,7 @@ function DayCard({
         <span className="day-title">
           {titulo} · <span className="muted">{fechaLabel}</span>
         </span>
-        <span className={`badge ${go ? 'badge-go' : 'badge-nogo'}`}>{go ? 'GO' : 'NO GO'}</span>
+        <span className={`badge ${go ? 'badge-go' : 'badge-nogo'}`}>{go ? 'Sí, dale' : 'Mejor no'}</span>
       </div>
       <p className="day-frase">{fraseBadge(go, fecha.getDate())}</p>
       <p className="day-sub">{resumen}</p>
@@ -107,7 +110,7 @@ function DayCard({
         </div>
       </div>
 
-      <DayStrip hours={day.hours} franjas={[fIda, fVuelta]} />
+      <DayStrip hours={day.hours} umbrales={umbrales} ida={fIda} vuelta={fVuelta} />
     </section>
   )
 }
@@ -190,7 +193,7 @@ export function VerdictView({
           </span>
         </div>
         <button className="icon-btn" aria-label="Perfil" onClick={() => nav('/settings')}>
-          ⚙️
+          <GearIcon />
         </button>
       </header>
 
