@@ -20,7 +20,10 @@ tocan. Deploy automático: push a `main` → GitHub Actions buildea y publica. L
 Gemini vive en un *secret* del repo (`VITE_GEMINI_API_KEY`), no en el código — pero queda
 legible en el bundle público (riesgo aceptado; mitigable restringiendo la key por referrer).
 
-- ✅ Recorridos: crear/editar/borrar, con nombre, barrios (75 de Mvd/Canelones/San José), franjas
+- ✅ Recorridos: crear/editar/borrar, con nombre, lugares y franjas
+- ✅ Buscador de lugares: lista local (75 de Mvd/Canelones/San José, alfabética) + geocoder
+  online de Open-Meteo; prioriza "cerca del usuario" por **zona horaria del dispositivo**
+  (sin GPS, sin IP, sin permisos) — funciona en cualquier país
 - ✅ Veredicto: reglas deterministas (`src/lib/verdict.ts`), ida Y vuelta (AND), peor hora de la franja manda
 - ✅ Presets: Flojo / Promedio / Extremo (umbrales en `PRESETS`, un solo lugar)
 - ✅ Clima: Open-Meteo (gratis, sin key), cache 30 min en localStorage, fallback a datos viejos sin red

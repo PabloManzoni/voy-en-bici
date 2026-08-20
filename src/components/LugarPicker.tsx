@@ -103,9 +103,7 @@ export function LugarPicker({
           {!buscando && resultados.length === 0 && !sinRed && (
             <div className="lugar-nota">No encontré ese lugar. Probá con otro nombre.</div>
           )}
-          {sinRed && (
-            <div className="lugar-nota">Sin conexión: solo puedo buscar en la lista local.</div>
-          )}
+          {sinRed && <div className="lugar-nota">Sin conexión: no pude buscar lugares.</div>}
         </div>
       )}
     </div>
