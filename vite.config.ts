@@ -1,0 +1,41 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['icon.svg', 'apple-touch-icon.png'],
+      manifest: {
+        name: '¿Voy en bici?',
+        short_name: 'Voy en bici',
+        description: 'GO o NO GO para tus recorridos en bici, según el clima.',
+        lang: 'es',
+        display: 'standalone',
+        theme_color: '#f4f6f8',
+        background_color: '#f4f6f8',
+        icons: [
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+        ]
+      },
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'open-meteo',
+              networkTimeoutSeconds: 6,
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 12 }
+            }
+          }
+        ]
+      }
+    })
+  ],
+  server: { port: 5183, strictPort: true }
+})
