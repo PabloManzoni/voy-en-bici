@@ -5,6 +5,7 @@ import { franjaById } from './franjas'
 export interface HourData {
   hour: number // 0-23 hora local
   temp: number // °C
+  apparent?: number // sensación térmica °C (puede faltar en caches viejos)
   rainProb: number | null // % (puede venir null de la API)
   precip: number // mm
   code: number // weathercode WMO
@@ -69,7 +70,7 @@ export const PRESETS: Record<PresetId, Preset> = {
     emoji: '💅',
     descripcion: 'Salgo solo si está lindo. Ni llovizna en todo el día, ni viento pesado, ni frío.',
     umbrales: {
-      vientoMax: 30, rafagaMax: 45, tempMin: 10, tempMax: 30,
+      vientoMax: 20, rafagaMax: 35, tempMin: 12, tempMax: 30,
       probLluviaFuerte: 30, probLluviaLeve: 30, probLlovizna: 30,
       lluviaDiaEntero: true,
     },
@@ -80,7 +81,7 @@ export const PRESETS: Record<PresetId, Preset> = {
     emoji: '🚴',
     descripcion: 'Soy un pibe común: me banco fresco y algo de viento, pero si llueve en mi horario, no salgo.',
     umbrales: {
-      vientoMax: 40, rafagaMax: 50, tempMin: 8, tempMax: 32,
+      vientoMax: 32, rafagaMax: 50, tempMin: 4, tempMax: 33,
       probLluviaFuerte: 40, probLluviaLeve: 40, probLlovizna: 60,
       lluviaDiaEntero: false,
     },
@@ -91,7 +92,7 @@ export const PRESETS: Record<PresetId, Preset> = {
     emoji: '🥚',
     descripcion: 'Salgo casi siempre, llovizna incluida. Me frenan las tormentas, las ráfagas fuertes y la lluvia en serio.',
     umbrales: {
-      vientoMax: 50, rafagaMax: 60, tempMin: 5, tempMax: 35,
+      vientoMax: 50, rafagaMax: 60, tempMin: 1, tempMax: 36,
       probLluviaFuerte: 40, probLluviaLeve: 999, probLlovizna: 999,
       lluviaDiaEntero: false,
     },

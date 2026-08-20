@@ -179,6 +179,19 @@ export function ChevronIcon({ size = 18, color = 'currentColor' }: { size?: numb
   )
 }
 
+export function RefreshIcon({ size = 19, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <Svg size={size} label="Actualizar clima">
+      <g {...S} stroke={color}>
+        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+        <path d="M21 3v5h-5" />
+        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+        <path d="M3 21v-5h5" />
+      </g>
+    </Svg>
+  )
+}
+
 export function PhoneIcon({ size = 20, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <Svg size={size}>

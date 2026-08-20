@@ -17,6 +17,7 @@ interface OpenMeteoResponse {
   hourly: {
     time: string[]
     temperature_2m: number[]
+    apparent_temperature: number[]
     precipitation_probability: (number | null)[]
     precipitation: number[]
     weathercode: number[]
@@ -36,6 +37,7 @@ function parse(data: OpenMeteoResponse): ForecastDay[] {
     byDate.get(date)!.push({
       hour,
       temp: h.temperature_2m[i],
+      apparent: h.apparent_temperature?.[i],
       rainProb: h.precipitation_probability[i],
       precip: h.precipitation[i],
       code: h.weathercode[i],
@@ -47,8 +49,14 @@ function parse(data: OpenMeteoResponse): ForecastDay[] {
   return [...byDate.entries()].map(([date, hours]) => ({ date, hours }))
 }
 
+// 'wx2': el formato viejo no tenía sensación térmica
 function cacheKey(lat: number, lon: number) {
-  return `vb.wx.${lat.toFixed(2)},${lon.toFixed(2)}`
+  return `vb.wx2.${lat.toFixed(2)},${lon.toFixed(2)}`
+}
+
+// Borra el cache para forzar datos frescos (botón de refresh).
+export function invalidarForecast(lat: number, lon: number): void {
+  localStorage.removeItem(cacheKey(lat, lon))
 }
 
 export async function getForecast(lat: number, lon: number): Promise<Forecast> {
@@ -62,7 +70,7 @@ export async function getForecast(lat: number, lon: number): Promise<Forecast> {
 
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-    `&hourly=temperature_2m,precipitation_probability,precipitation,weathercode,windspeed_10m,winddirection_10m,windgusts_10m` +
+    `&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,weathercode,windspeed_10m,winddirection_10m,windgusts_10m` +
     `&forecast_days=2&timezone=auto`
 
   try {

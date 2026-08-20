@@ -118,27 +118,27 @@ export function Settings({
           <tbody>
             <tr>
               <td>Viento sostenido</td>
-              <td>30 km/h</td>
-              <td>40 km/h</td>
+              <td>20 km/h</td>
+              <td>32 km/h</td>
               <td>50 km/h</td>
             </tr>
             <tr>
               <td>Ráfagas</td>
-              <td>45 km/h</td>
+              <td>35 km/h</td>
               <td>50 km/h</td>
               <td>60 km/h</td>
             </tr>
             <tr>
               <td>Frío</td>
-              <td>&lt; 10°</td>
-              <td>&lt; 8°</td>
-              <td>&lt; 5°</td>
+              <td>&lt; 12°</td>
+              <td>&lt; 4°</td>
+              <td>&lt; 1°</td>
             </tr>
             <tr>
               <td>Calor</td>
               <td>&gt; 30°</td>
-              <td>&gt; 32°</td>
-              <td>&gt; 35°</td>
+              <td>&gt; 33°</td>
+              <td>&gt; 36°</td>
             </tr>
             <tr>
               <td>Llovizna</td>

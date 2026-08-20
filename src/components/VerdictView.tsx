@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import type { PresetId, Recorrido } from '../types'
 import { franjaById } from '../lib/franjas'
 import { bearing, puntoMedio } from '../lib/geo'
-import { getForecast, hoyLocal, type Forecast, type ForecastDay } from '../lib/weather'
+import { getForecast, hoyLocal, invalidarForecast, type Forecast, type ForecastDay } from '../lib/weather'
 import { evalDia, PRESETS, type DiaEval } from '../lib/verdict'
 import { fraseBadge, fraseResumen, fraseTramo } from '../lib/explain'
 import { explicacionIA } from '../lib/ai'
 import { DayStrip } from './DayStrip'
-import { GearIcon } from './Icons'
+import { GearIcon, RefreshIcon } from './Icons'
 import { nav } from '../App'
 
 type Modo = 'full' | 'solo-vuelta' | 'pasado'
@@ -189,6 +189,17 @@ export function VerdictView({
             {origen.nombre} → {destino.nombre}
           </span>
         </div>
+        <button
+          className="icon-btn"
+          aria-label="Actualizar clima"
+          onClick={() => {
+            const mid = puntoMedio(origen, destino)
+            invalidarForecast(mid.lat, mid.lon)
+            setReintento((n) => n + 1)
+          }}
+        >
+          <RefreshIcon />
+        </button>
         <button className="icon-btn" aria-label="Perfil" onClick={() => nav('/settings')}>
           <GearIcon />
         </button>
