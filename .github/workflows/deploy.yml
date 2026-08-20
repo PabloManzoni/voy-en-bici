@@ -28,7 +28,8 @@ jobs:
       - run: npm test
       - run: npm run build
         env:
-          BASE_PATH: /voy-en-bici/
+          # con dominio propio (bici.tuggsy.com) la app vive en la raíz
+          BASE_PATH: /
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
           VITE_GEMINI_MODEL: gemini-2.5-flash
       - uses: actions/upload-pages-artifact@v3
