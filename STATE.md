@@ -12,12 +12,13 @@ El análisis completo de decisiones está en [docs/ANALISIS.md](docs/ANALISIS.md
 
 ## Estado actual
 
-**v1 deployada en GitHub Pages**: https://pablomanzoni.github.io/voy-en-bici/
-(decisión de Pablo 20/08: dominio de GitHub por ahora, sin Vercel — los proyectos críticos
-de Vercel, synthetic y vecinos, no se tocan). Deploy automático: push a `main` → GitHub
-Actions buildea y publica. La key de Gemini vive en un *secret* del repo
-(`VITE_GEMINI_API_KEY`), no en el código — pero queda legible en el bundle público
-(riesgo aceptado por Pablo; mitigable restringiendo la key por referrer en Google Cloud).
+**v1 deployada en GitHub Pages con dominio propio**: https://bici.tuggsy.com
+(la URL vieja pablomanzoni.github.io/voy-en-bici redirige sola). DNS: CNAME `bici` →
+`pablomanzoni.github.io` en Cloudflare (nube gris / DNS only — con proxy naranja GitHub
+no emite el certificado). Sin Vercel — los proyectos críticos (synthetic y vecinos) no se
+tocan. Deploy automático: push a `main` → GitHub Actions buildea y publica. La key de
+Gemini vive en un *secret* del repo (`VITE_GEMINI_API_KEY`), no en el código — pero queda
+legible en el bundle público (riesgo aceptado; mitigable restringiendo la key por referrer).
 
 - ✅ Recorridos: crear/editar/borrar, con nombre, barrios (75 de Mvd/Canelones/San José), franjas
 - ✅ Veredicto: reglas deterministas (`src/lib/verdict.ts`), ida Y vuelta (AND), peor hora de la franja manda
