@@ -83,9 +83,9 @@ export function fraseResumen(dia: DiaEval, modo: 'full' | 'solo-vuelta', presetI
         avisos.push(`ojo con las ráfagas ${donde} (${tramo.viento.gustMax} km/h)`)
       if (tramo.temp.min <= u.tempMin + 2) avisos.push(`abrigate ${donde} (${Math.round(tramo.temp.min)}°)`)
     }
-    const base = `Está ${palabraClima(t.codeDominante)} y ${fraseTemp(t.temp)}.`
-    if (avisos.length > 0) return `${base} Eso sí: ${avisos[0]}.`
-    return `${base} Día de bici.`
+    const base = `${cap(palabraClima(t.codeDominante))} y ${fraseTemp(t.temp)}`
+    if (avisos.length > 0) return `${base}. Ojo: ${avisos[0]}.`
+    return `${base}, sin drama.`
   }
 
   // NO GO: contar el motivo más grave y dónde.

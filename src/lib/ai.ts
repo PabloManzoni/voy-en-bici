@@ -81,7 +81,8 @@ async function llamarGemini(prompt: string): Promise<string | null> {
 
 // Cache por contenido: mismo pronóstico + mismo veredicto → misma explicación.
 function cacheKeyDe(ctx: ContextoDia): string {
-  const s = JSON.stringify([ctx.etiquetaDia, ctx.recorrido, ctx.presetId, ctx.modo, ctx.dia])
+  // 'v2' invalida los textos cacheados con el estilo largo anterior
+  const s = JSON.stringify(['v2', ctx.etiquetaDia, ctx.recorrido, ctx.presetId, ctx.modo, ctx.dia])
   let h = 0
   for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0
   return `vb.ia.${h}`
@@ -95,16 +96,21 @@ export async function explicacionIA(ctx: ContextoDia): Promise<string | null> {
 
   const veredicto = ctx.dia.go ? 'GO (se puede ir en bici)' : 'NO GO (mejor no ir en bici)'
   const preset = PRESETS[ctx.presetId]
+  const dia = ctx.etiquetaDia.startsWith('mañana') ? 'Mañana' : 'Hoy'
+  const arranque = ctx.dia.go ? `${dia} podés:` : `${dia} no:`
   const prompt = `Sos el redactor de una app uruguaya que decide si conviene ir en bicicleta según el clima.
 El veredicto YA está decidido por reglas: ${veredicto}. NO lo cuestiones ni lo cambies.
-Tu única tarea: redactar la explicación para el usuario en 1 o 2 frases cortas, español rioplatense (voseo), tono cercano y directo, sin emojis, sin saludos. No repitas el veredicto: arriba ya hay un cartel grande que dice "Sí, dale" o "Mejor no" — vos explicá el porqué.
-Mencioná el dato concreto que más importa (viento con su dirección relativa —de frente/cruzado/de cola—, lluvia, temperatura). Si es GO con alguna advertencia (viento cerca del límite, frío), avisala en corto.
-IMPORTANTE: estás hablando de «${ctx.etiquetaDia}». Nombrá el día exactamente así — si es mañana, decí "mañana", nunca "hoy".
+Redactá UNA sola frase corta — una línea, ideal menos de 14 palabras. Dos frases solo si es imprescindible. Español rioplatense (voseo), sin saludos, sin exclamaciones, sin emojis, sin nombrar el día de la semana.
+Formato exacto: empezá con "${arranque}" y seguí con lo que más importa (máximo 2 datos: viento con su dirección —de frente/cruzado/de cola—, lluvia o temperatura).
+Ejemplos del tono buscado:
+"Hoy podés: a la vuelta fresco y viento de cola."
+"Mañana no: la vuelta cae a 6° y hay ráfagas de 50."
+"Hoy podés: llovizna finita a la ida, nada más."
 Perfil del usuario: "${preset.nombre}" (${preset.descripcion}).
 Recorrido: ${ctx.recorrido}, ${ctx.etiquetaDia}.
 Datos por tramo:
 ${describir(ctx)}
-Respondé SOLO con la explicación, nada más.`
+Respondé SOLO con la frase, nada más.`
 
   const text = await llamarGemini(prompt)
   if (text) {
