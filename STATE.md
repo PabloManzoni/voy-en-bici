@@ -12,7 +12,12 @@ El análisis completo de decisiones está en [docs/ANALISIS.md](docs/ANALISIS.md
 
 ## Estado actual
 
-**v1 funcionando en local. NO deployada** (decisión de Pablo: probar local primero).
+**v1 deployada en GitHub Pages**: https://pablomanzoni.github.io/voy-en-bici/
+(decisión de Pablo 20/08: dominio de GitHub por ahora, sin Vercel — los proyectos críticos
+de Vercel, synthetic y vecinos, no se tocan). Deploy automático: push a `main` → GitHub
+Actions buildea y publica. La key de Gemini vive en un *secret* del repo
+(`VITE_GEMINI_API_KEY`), no en el código — pero queda legible en el bundle público
+(riesgo aceptado por Pablo; mitigable restringiendo la key por referrer en Google Cloud).
 
 - ✅ Recorridos: crear/editar/borrar, con nombre, barrios (75 de Mvd/Canelones/San José), franjas
 - ✅ Veredicto: reglas deterministas (`src/lib/verdict.ts`), ida Y vuelta (AND), peor hora de la franja manda
@@ -41,9 +46,9 @@ funciona igual con explicaciones de plantilla.
 
 ## Pendiente / decisiones para después
 
-- **Deploy**: Vercel + subdominio de tuggsy.com (patrón de synthetic/vecinos). OJO: la key de
-  Gemini en el bundle queda pública → al deployar, decidir: proxy chico (una serverless function)
-  o solo plantillas en prod.
+- **Dominio propio** (ej. bici.tuggsy.com): posible más adelante; hoy alcanza con el de GitHub.
+- **Key de Gemini**: si algún día molesta que sea legible en el bundle → restringirla por
+  HTTP referrer en Google Cloud Console, o proxy chico. Por ahora: aceptado.
 - Safari iOS borra localStorage tras 7 días sin uso **si la PWA no está instalada** — fomentar instalar.
 - Parking lot (ver ANALISIS.md): sugerir horario alternativo, viento lateral en el veredicto,
   notificaciones ante cambios, backtesting de umbrales, ubicación exacta.
