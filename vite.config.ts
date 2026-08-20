@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  // En GitHub Pages la app vive en /voy-en-bici/; local sigue en /.
+  // El workflow de deploy setea BASE_PATH.
+  base: process.env.BASE_PATH || '/',
   plugins: [
     react(),
     VitePWA({
