@@ -1,40 +1,10 @@
 import { useMemo, useState } from 'react'
-import type { FranjaId, Recorrido } from '../types'
-import { BARRIOS, barrioById } from '../data/barrios'
+import type { FranjaId, Lugar, Recorrido } from '../types'
 import { FRANJAS } from '../lib/franjas'
 import { bearing, distanciaKm, rumboCardinal } from '../lib/geo'
 import { uid } from '../lib/storage'
 import { nav } from '../App'
-
-const DEPTOS = ['Montevideo', 'Canelones', 'San José'] as const
-
-function BarrioSelect({
-  label,
-  value,
-  onChange,
-}: {
-  label: string
-  value: string
-  onChange: (v: string) => void
-}) {
-  return (
-    <label className="field">
-      <span className="field-label">{label}</span>
-      <select value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">Elegí un barrio…</option>
-        {DEPTOS.map((d) => (
-          <optgroup key={d} label={d}>
-            {BARRIOS.filter((b) => b.depto === d).map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.nombre}
-              </option>
-            ))}
-          </optgroup>
-        ))}
-      </select>
-    </label>
-  )
-}
+import { LugarPicker } from './LugarPicker'
 
 function FranjaPicker({
   label,
@@ -75,30 +45,33 @@ export function RouteForm({
 }) {
   const editando = editId ? recorridos.find((r) => r.id === editId) : undefined
   const [nombre, setNombre] = useState(editando?.nombre ?? '')
-  const [origenId, setOrigenId] = useState(editando?.origenId ?? '')
-  const [destinoId, setDestinoId] = useState(editando?.destinoId ?? '')
+  const [origen, setOrigen] = useState<Lugar | null>(editando?.origen ?? null)
+  const [destino, setDestino] = useState<Lugar | null>(editando?.destino ?? null)
   const [franjaIda, setFranjaIda] = useState<FranjaId | ''>(editando?.franjaIda ?? '')
   const [franjaVuelta, setFranjaVuelta] = useState<FranjaId | ''>(editando?.franjaVuelta ?? '')
 
-  const origen = barrioById(origenId)
-  const destino = barrioById(destinoId)
+  const mismoLugar =
+    origen !== null &&
+    destino !== null &&
+    Math.abs(origen.lat - destino.lat) < 0.002 &&
+    Math.abs(origen.lon - destino.lon) < 0.002
 
   const preview = useMemo(() => {
-    if (!origen || !destino || origen.id === destino.id) return null
+    if (!origen || !destino || mismoLugar) return null
     const km = distanciaKm(origen.lat, origen.lon, destino.lat, destino.lon)
     const rumbo = rumboCardinal(bearing(origen.lat, origen.lon, destino.lat, destino.lon))
     return `≈ ${km < 10 ? km.toFixed(1) : Math.round(km)} km, rumbo ${rumbo}`
-  }, [origen, destino])
+  }, [origen, destino, mismoLugar])
 
-  const valido = origen && destino && origen.id !== destino.id && franjaIda && franjaVuelta
+  const valido = origen && destino && !mismoLugar && franjaIda && franjaVuelta
 
   const guardar = () => {
     if (!valido) return
     const nuevo: Recorrido = {
       id: editando?.id ?? uid(),
       nombre: nombre.trim() || `${origen!.nombre} → ${destino!.nombre}`,
-      origenId,
-      destinoId,
+      origen: origen!,
+      destino: destino!,
       franjaIda: franjaIda as FranjaId,
       franjaVuelta: franjaVuelta as FranjaId,
     }
@@ -137,13 +110,13 @@ export function RouteForm({
           />
         </label>
 
-        <BarrioSelect label="¿De dónde salís?" value={origenId} onChange={setOrigenId} />
-        <BarrioSelect label="¿A dónde vas?" value={destinoId} onChange={setDestinoId} />
+        <LugarPicker label="¿De dónde salís?" value={origen} onChange={setOrigen} />
+        <LugarPicker label="¿A dónde vas?" value={destino} onChange={setDestino} />
 
-        {origen && destino && origen.id === destino.id && (
-          <p className="form-error">El origen y el destino no pueden ser el mismo barrio.</p>
+        {mismoLugar && (
+          <p className="form-error">El origen y el destino no pueden ser el mismo lugar.</p>
         )}
-        {preview && <p className="form-preview">📍 {preview}</p>}
+        {preview && <p className="form-preview">{preview}</p>}
 
         <FranjaPicker label="¿A qué hora vas? (ida)" value={franjaIda} onChange={setFranjaIda} />
         <FranjaPicker label="¿A qué hora volvés?" value={franjaVuelta} onChange={setFranjaVuelta} />

@@ -1,5 +1,4 @@
 import type { Recorrido } from '../types'
-import { barrioById } from '../data/barrios'
 import { franjaById } from '../lib/franjas'
 import { nav } from '../App'
 import { BikeIcon, ChevronIcon, GearIcon, PencilIcon } from './Icons'
@@ -32,14 +31,12 @@ export function Home({ recorridos }: { recorridos: Recorrido[] }) {
         <>
           <div className="route-list">
             {recorridos.map((r) => {
-              const o = barrioById(r.origenId)
-              const d = barrioById(r.destinoId)
               return (
                 <button key={r.id} className="route-card" onClick={() => nav(`/r/${r.id}`)}>
                   <div className="route-card-main">
                     <div className="route-name">{r.nombre}</div>
                     <div className="route-sub">
-                      {o?.nombre} → {d?.nombre}
+                      {r.origen.nombre} → {r.destino.nombre}
                     </div>
                     <div className="route-sub muted">
                       Ida {franjaById(r.franjaIda).label.toLowerCase()} · Vuelta{' '}

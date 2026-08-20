@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { PresetId, Recorrido } from '../types'
-import { barrioById } from '../data/barrios'
 import { franjaById } from '../lib/franjas'
 import { bearing, puntoMedio } from '../lib/geo'
 import { getForecast, hoyLocal, type Forecast, type ForecastDay } from '../lib/weather'
@@ -41,11 +40,9 @@ function DayCard({
     if (modo === 'pasado') return
     let vivo = true
     const etiqueta = `${titulo.toLowerCase()} ${fecha.toLocaleDateString('es-UY', { weekday: 'long' })}`
-    const o = barrioById(recorrido.origenId)
-    const d = barrioById(recorrido.destinoId)
     explicacionIA({
       etiquetaDia: etiqueta,
-      recorrido: `${o?.nombre} → ${d?.nombre}`,
+      recorrido: `${recorrido.origen.nombre} → ${recorrido.destino.nombre}`,
       dia: modo === 'solo-vuelta' ? { ...dia, go } : dia,
       presetId,
       modo: modo === 'solo-vuelta' ? 'solo-vuelta' : 'full',
@@ -129,8 +126,8 @@ export function VerdictView({
   const [error, setError] = useState(false)
   const [reintento, setReintento] = useState(0)
 
-  const origen = recorrido ? barrioById(recorrido.origenId) : undefined
-  const destino = recorrido ? barrioById(recorrido.destinoId) : undefined
+  const origen = recorrido?.origen
+  const destino = recorrido?.destino
 
   useEffect(() => {
     if (!origen || !destino) return

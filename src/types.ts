@@ -16,11 +16,20 @@ export interface Barrio {
   lon: number
 }
 
+// Un lugar elegido para un recorrido: nombre + coordenadas.
+// Puede venir de la lista local o del geocoder online.
+export interface Lugar {
+  nombre: string
+  detalle?: string // "Montevideo" / "Canelones" / "Buenos Aires, Argentina"
+  lat: number
+  lon: number
+}
+
 export interface Recorrido {
   id: string
   nombre: string
-  origenId: string
-  destinoId: string
+  origen: Lugar
+  destino: Lugar
   franjaIda: FranjaId
   franjaVuelta: FranjaId
 }
