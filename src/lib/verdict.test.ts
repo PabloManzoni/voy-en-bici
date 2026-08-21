@@ -42,8 +42,8 @@ describe('veredicto', () => {
     }
   })
 
-  it('ráfagas de 55 frenan al promedio pero no al extremo', () => {
-    const day = mkDay([{ hour: 9, gust: 55 }])
+  it('ráfagas de 45 frenan al promedio (corta en 40) pero no al extremo (50)', () => {
+    const day = mkDay([{ hour: 9, gust: 45 }])
     expect(eval_(day, 'promedio').go).toBe(false)
     expect(eval_(day, 'extremo').go).toBe(true)
   })
@@ -71,7 +71,7 @@ describe('veredicto', () => {
     expect(eval_(day, 'flojo').go).toBe(false)
   })
 
-  it('frío: 7° de invierno es GO para el promedio (corta en 4); 3° lo frena; el extremo aguanta hasta 1°', () => {
+  it('frío: 7° de invierno es GO para el promedio (corta en 5); 3° lo frena; el extremo aguanta hasta 1°', () => {
     const day = mkDay([{ hour: 8, temp: 7 }, { hour: 9, temp: 7 }, { hour: 10, temp: 9 }])
     expect(eval_(day, 'promedio').go).toBe(true)
     expect(eval_(day, 'flojo').go).toBe(false)
@@ -80,13 +80,13 @@ describe('veredicto', () => {
     expect(eval_(helada, 'extremo').go).toBe(true)
   })
 
-  it('calor de 34° a la vuelta: promedio NO (corta en 33), extremo GO', () => {
+  it('calor de 34° a la vuelta: promedio NO (corta en 30), extremo GO (corta en 34)', () => {
     const day = mkDay([{ hour: 18, temp: 34 }])
     expect(eval_(day, 'promedio').go).toBe(false)
     expect(eval_(day, 'extremo').go).toBe(true)
   })
 
-  it('viento de 25 sostenido frena al flojo (corta en 20) pero no al promedio (32)', () => {
+  it('viento de 25 sostenido frena al flojo (corta en 20) pero no al promedio (30)', () => {
     const day = mkDay([{ hour: 9, wind: 25 }])
     expect(eval_(day, 'flojo').go).toBe(false)
     expect(eval_(day, 'promedio').go).toBe(true)
