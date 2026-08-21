@@ -65,6 +65,14 @@ funciona igual con explicaciones de plantilla.
 "Al trabajo": El Pinar → Punta Gorda, ida Mañana (8-11), vuelta Tarde (17-20).
 (Vive en el localStorage del navegador de prueba, no en el código.)
 
+## v1 declarada estable (21/08) — decisiones de rumbo
+
+- **Sigue 100% PWA estática, sin servidor** (decisión de Pablo): notificaciones push
+  descartadas (requieren una pieza de backend), stores descartados (Apple US$99/año no;
+  Play US$25 únicos queda como puerta abierta "no por ahora").
+- **Difusión = link compartido**: tarjeta Open Graph agregada (og.jpg 1200×630 + meta tags
+  estáticos) — al compartir bici.tuggsy.com en WhatsApp/Telegram aparece logo+nombre+bajada.
+
 ## Pendiente / decisiones para después
 
 - **Dominio propio** (ej. bici.tuggsy.com): posible más adelante; hoy alcanza con el de GitHub.
