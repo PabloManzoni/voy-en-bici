@@ -1,4 +1,6 @@
-# ¿Voy en bici? — Estado
+# ¿Me mando? — Estado
+
+*(ex "¿Voy en bici?" — renombrada el 21/08 al generalizar a toda la movilidad ligera)*
 
 *Actualizado: 20 de agosto de 2026*
 
@@ -27,6 +29,11 @@ legible en el bundle público (riesgo aceptado; mitigable restringiendo la key p
 - ✅ Veredicto: reglas deterministas (`src/lib/verdict.ts`), ida Y vuelta (AND), peor hora de la franja manda
 - ✅ Presets: Flojo / Promedio / Extremo (umbrales en `PRESETS`, un solo lugar; valores
   finales elegidos por Pablo 21/08 y validados contra guías ciclistas)
+- ✅ Vehículos: Bici urbana / Ciclismo deportivo / E-bike / Monopatín / Moto — selector en
+  Ajustes (arriba del perfil), persistido, mostrado en el veredicto y pasado a la IA.
+  **PENDIENTE**: la matriz de umbrales vehículo×conductor (encargo redactado en
+  `docs/LOGICA-CLIMA.md`; Pablo lo lleva a otro agente y trae los números). Hasta entonces
+  todos los vehículos usan los límites de bici urbana (avisado en la UI).
 - ✅ Frío y calor por **sensación térmica** (fusiona viento+humedad; fallback a termómetro)
 - ✅ Capa **"se junta demasiado"**: lluvia desde la mitad del umbral + viento o temperatura
   en zona amarilla (≥75% del límite) → NO GO explicado. El viento **de cola no cuenta**

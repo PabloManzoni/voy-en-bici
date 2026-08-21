@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: '¿Voy en bici?',
-        short_name: 'Voy en bici',
-        description: 'GO o NO GO para tus recorridos en bici, según el clima.',
+        name: '¿Me mando?',
+        short_name: '¿Me mando?',
+        description: '¿Salís rodando o mejor no? El clima decide: bici, monopatín, moto.',
         lang: 'es',
         display: 'standalone',
         theme_color: '#14161d',

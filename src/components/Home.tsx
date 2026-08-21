@@ -1,14 +1,14 @@
 import type { Recorrido } from '../types'
 import { franjaById } from '../lib/franjas'
 import { nav } from '../App'
-import { BikeIcon, ChevronIcon, GearIcon, PencilIcon } from './Icons'
+import { ChevronIcon, GearIcon, PencilIcon, WheelIcon } from './Icons'
 
 export function Home({ recorridos }: { recorridos: Recorrido[] }) {
   return (
     <>
       <header className="topbar">
         <h1>
-          <BikeIcon size={24} color="var(--mint)" /> ¿Voy en bici?
+          <WheelIcon size={24} color="var(--mint)" /> ¿Me mando?
         </h1>
         <button className="icon-btn" aria-label="Perfil" onClick={() => nav('/settings')}>
           <GearIcon />
@@ -18,10 +18,10 @@ export function Home({ recorridos }: { recorridos: Recorrido[] }) {
       {recorridos.length === 0 ? (
         <div className="empty">
           <div className="empty-emoji">
-            <BikeIcon size={80} color="var(--lav)" />
+            <WheelIcon size={80} color="var(--lav)" />
           </div>
           <p>
-            Cargá tu primer recorrido y te digo si <strong>hoy y mañana</strong> se va en bici o no.
+            Cargá tu primer recorrido y te digo si <strong>hoy y mañana</strong> te mandás o no.
           </p>
           <button className="btn-primary" onClick={() => nav('/new')}>
             Crear mi primer recorrido

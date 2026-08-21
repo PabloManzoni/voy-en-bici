@@ -110,7 +110,7 @@ function HoraDetalle({ h, umbrales }: { h: HourData; umbrales: Umbrales }) {
       {motivos.length > 0 ? (
         <div className="hora-veredicto hora-mal">Para tu perfil: {motivoFrase(motivos[0])}.</div>
       ) : (
-        <div className="hora-veredicto hora-bien">A esta hora está para bici.</div>
+        <div className="hora-veredicto hora-bien">A esta hora está para salir.</div>
       )}
     </div>
   )

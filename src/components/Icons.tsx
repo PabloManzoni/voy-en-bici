@@ -130,6 +130,22 @@ export function WeatherIcon({ code, size = 16 }: { code: number; size?: number }
   )
 }
 
+// Rueda: el símbolo que sirve para todos los rodados (bici, monopatín, moto…).
+export function WheelIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <Svg size={size}>
+      <g {...S} stroke={color}>
+        <circle cx="12" cy="12" r="8.5" />
+        <circle cx="12" cy="12" r="1.6" />
+        <path d="M12 4v6.4" />
+        <path d="M12 13.6V20" />
+        <path d="M4 12h6.4" />
+        <path d="M13.6 12H20" />
+      </g>
+    </Svg>
+  )
+}
+
 export function BikeIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <Svg size={size}>

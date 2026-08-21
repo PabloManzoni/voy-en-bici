@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react'
-import type { PresetId, Recorrido } from './types'
-import { loadPreset, loadRecorridos, savePreset, saveRecorridos } from './lib/storage'
+import type { PresetId, Recorrido, VehiculoId } from './types'
+import {
+  loadPreset,
+  loadRecorridos,
+  loadVehiculo,
+  savePreset,
+  saveRecorridos,
+  saveVehiculo,
+} from './lib/storage'
 import { Home } from './components/Home'
 import { RouteForm } from './components/RouteForm'
 import { VerdictView } from './components/VerdictView'
@@ -24,6 +31,7 @@ export default function App() {
   const route = useHashRoute()
   const [recorridos, setRecorridos] = useState<Recorrido[]>(loadRecorridos)
   const [preset, setPreset] = useState<PresetId>(loadPreset)
+  const [vehiculo, setVehiculo] = useState<VehiculoId>(loadVehiculo)
 
   const updateRecorridos = (rs: Recorrido[]) => {
     setRecorridos(rs)
@@ -35,15 +43,27 @@ export default function App() {
     savePreset(p)
   }
 
+  const updateVehiculo = (v: VehiculoId) => {
+    setVehiculo(v)
+    saveVehiculo(v)
+  }
+
   let view
   if (route === '/new') {
     view = <RouteForm recorridos={recorridos} onSave={updateRecorridos} />
   } else if (route.startsWith('/edit/')) {
     view = <RouteForm recorridos={recorridos} onSave={updateRecorridos} editId={route.slice(6)} />
   } else if (route.startsWith('/r/')) {
-    view = <VerdictView recorridos={recorridos} preset={preset} id={route.slice(3)} />
+    view = <VerdictView recorridos={recorridos} preset={preset} vehiculo={vehiculo} id={route.slice(3)} />
   } else if (route === '/settings') {
-    view = <Settings preset={preset} onChange={updatePreset} />
+    view = (
+      <Settings
+        preset={preset}
+        onChange={updatePreset}
+        vehiculo={vehiculo}
+        onChangeVehiculo={updateVehiculo}
+      />
+    )
   } else {
     view = <Home recorridos={recorridos} />
   }

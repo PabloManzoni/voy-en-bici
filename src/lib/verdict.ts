@@ -80,7 +80,7 @@ export const PRESETS: Record<PresetId, Preset> = {
   promedio: {
     id: 'promedio',
     nombre: 'Promedio',
-    emoji: '🚴',
+    emoji: '👍',
     descripcion: 'Soy un pibe común: me banco fresco y algo de viento, pero si llueve en mi horario, no salgo.',
     umbrales: {
       vientoMax: 30, rafagaMax: 40, tempMin: 5, tempMax: 30,

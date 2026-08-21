@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import type { PresetId } from '../types'
+import type { PresetId, VehiculoId } from '../types'
 import { PRESETS } from '../lib/verdict'
+import { VEHICULOS } from '../lib/vehiculos'
 import { iaDisponible } from '../lib/ai'
 import { nav } from '../App'
 import { PhoneIcon } from './Icons'
@@ -69,9 +70,13 @@ function InstallCard() {
 export function Settings({
   preset,
   onChange,
+  vehiculo,
+  onChangeVehiculo,
 }: {
   preset: PresetId
   onChange: (p: PresetId) => void
+  vehiculo: VehiculoId
+  onChangeVehiculo: (v: VehiculoId) => void
 }) {
   return (
     <>
@@ -79,12 +84,35 @@ export function Settings({
         <button className="icon-btn" aria-label="Volver" onClick={() => nav('/')}>
           ←
         </button>
-        <h1>Tu perfil de ciclista</h1>
+        <h1>Ajustes</h1>
         <span className="icon-btn" />
       </header>
 
+      <p className="section-title">Tu vehículo</p>
+      <div className="preset-list">
+        {Object.values(VEHICULOS).map((v) => (
+          <button
+            key={v.id}
+            className={`preset-card preset-slim ${vehiculo === v.id ? 'preset-on' : ''}`}
+            onClick={() => onChangeVehiculo(v.id)}
+          >
+            <span className="preset-emoji">{v.emoji}</span>
+            <span className="preset-body">
+              <strong>{v.nombre}</strong>
+              <span>{v.descripcion}</span>
+            </span>
+            {vehiculo === v.id && <span className="preset-check">✓</span>}
+          </button>
+        ))}
+      </div>
+      <p className="settings-nota">
+        Por ahora todos los vehículos usan los límites de bici urbana — los ajustes finos por
+        vehículo están en camino.
+      </p>
+
+      <p className="section-title">Tu perfil de conductor</p>
       <p className="settings-intro">
-        El perfil define qué tan feo tiene que estar el día para que te diga NO GO.
+        Define qué tan feo tiene que estar el día para que te diga que no.
       </p>
 
       <div className="preset-list">
@@ -111,7 +139,7 @@ export function Settings({
             <tr>
               <th></th>
               <th>💅 Flojo</th>
-              <th>🚴 Promedio</th>
+              <th>👍 Promedio</th>
               <th>🥚 Extremo</th>
             </tr>
           </thead>

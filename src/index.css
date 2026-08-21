@@ -646,6 +646,30 @@ select {
   line-height: 1.5;
 }
 
+.section-title {
+  margin: 6px 0 -4px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.settings-nota {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.preset-slim {
+  padding: 11px 14px;
+}
+
+.preset-slim .preset-body span {
+  font-size: 13px;
+}
+
 .preset-list {
   display: flex;
   flex-direction: column;

@@ -35,3 +35,5 @@ export interface Recorrido {
 }
 
 export type PresetId = 'flojo' | 'promedio' | 'extremo'
+
+export type VehiculoId = 'bici' | 'deportivo' | 'ebike' | 'monopatin' | 'moto'

@@ -1,8 +1,9 @@
-import type { PresetId, Recorrido } from '../types'
+import type { PresetId, Recorrido, VehiculoId } from '../types'
 import { barrioById } from '../data/barrios'
 
 const K_RECORRIDOS = 'vb.recorridos'
 const K_PRESET = 'vb.preset'
+const K_VEHICULO = 'vb.vehiculo'
 
 // Formato viejo (v1): guardaba origenId/destinoId contra la lista embebida.
 interface RecorridoV1 {
@@ -55,6 +56,15 @@ export function loadPreset(): PresetId {
 
 export function savePreset(p: PresetId): void {
   localStorage.setItem(K_PRESET, p)
+}
+
+export function loadVehiculo(): VehiculoId {
+  const v = localStorage.getItem(K_VEHICULO)
+  return v === 'deportivo' || v === 'ebike' || v === 'monopatin' || v === 'moto' ? v : 'bici'
+}
+
+export function saveVehiculo(v: VehiculoId): void {
+  localStorage.setItem(K_VEHICULO, v)
 }
 
 export function uid(): string {

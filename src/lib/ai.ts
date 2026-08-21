@@ -18,6 +18,7 @@ export function iaDisponible(): boolean {
 interface ContextoDia {
   etiquetaDia: string // "hoy miércoles" / "mañana jueves"
   recorrido: string // "El Pinar → Punta Gorda"
+  vehiculo: string // "Bici urbana", "Monopatín / scooter"…
   dia: DiaEval
   presetId: PresetId
   modo: 'full' | 'solo-vuelta'
@@ -98,7 +99,7 @@ export async function explicacionIA(ctx: ContextoDia): Promise<string | null> {
   const preset = PRESETS[ctx.presetId]
   const dia = ctx.etiquetaDia.startsWith('mañana') ? 'Mañana' : 'Hoy'
   const arranque = ctx.dia.go ? `${dia} podés:` : `${dia} no:`
-  const prompt = `Sos el redactor de una app uruguaya que decide si conviene ir en bicicleta según el clima.
+  const prompt = `Sos el redactor de una app uruguaya que decide si conviene salir rodando (bici, monopatín, moto…) según el clima. El usuario anda en: ${ctx.vehiculo}.
 El veredicto YA está decidido por reglas: ${veredicto}. NO lo cuestiones ni lo cambies.
 Redactá UNA sola frase corta — una línea, ideal menos de 14 palabras. Dos frases solo si es imprescindible. Español rioplatense (voseo), sin saludos, sin exclamaciones, sin emojis, sin nombrar el día de la semana.
 Formato exacto: empezá con "${arranque}" y seguí con lo que más importa (máximo 2 datos: viento con su dirección —de frente/cruzado/de cola—, lluvia o temperatura).

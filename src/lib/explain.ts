@@ -116,8 +116,9 @@ function cap(s: string): string {
 }
 
 // Frases cortas bajo el badge, estables por día (varían entre días, no entre aperturas).
-const GO_FRASES = ['Día de bici.', 'Está para pedalear.', 'Se va en bici.']
-const NOGO_FRASES = ['La bici descansa.', 'No es día de bici.', 'Otra vez será.']
+// Neutras de vehículo: sirven para bici, monopatín, moto…
+const GO_FRASES = ['Día de rodar.', 'Está para salir.', 'Se sale.']
+const NOGO_FRASES = ['Hoy se guarda.', 'No es día.', 'Otra vez será.']
 
 export function fraseBadge(go: boolean, dayOfMonth: number): string {
   const arr = go ? GO_FRASES : NOGO_FRASES

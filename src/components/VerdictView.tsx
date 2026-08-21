@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { PresetId, Recorrido } from '../types'
+import type { PresetId, Recorrido, VehiculoId } from '../types'
+import { VEHICULOS } from '../lib/vehiculos'
 import { franjaById } from '../lib/franjas'
 import { bearing, puntoMedio } from '../lib/geo'
 import { getForecast, hoyLocal, invalidarForecast, type Forecast, type ForecastDay } from '../lib/weather'
@@ -20,6 +21,7 @@ function DayCard({
   modo,
   recorrido,
   presetId,
+  vehiculo,
 }: {
   titulo: string
   fecha: Date
@@ -28,6 +30,7 @@ function DayCard({
   modo: Modo
   recorrido: Recorrido
   presetId: PresetId
+  vehiculo: VehiculoId
 }) {
   const fIda = franjaById(recorrido.franjaIda)
   const fVuelta = franjaById(recorrido.franjaVuelta)
@@ -43,6 +46,7 @@ function DayCard({
     explicacionIA({
       etiquetaDia: etiqueta,
       recorrido: `${recorrido.origen.nombre} → ${recorrido.destino.nombre}`,
+      vehiculo: VEHICULOS[vehiculo].nombre,
       dia: modo === 'solo-vuelta' ? { ...dia, go } : dia,
       presetId,
       modo: modo === 'solo-vuelta' ? 'solo-vuelta' : 'full',
@@ -115,10 +119,12 @@ function DayCard({
 export function VerdictView({
   recorridos,
   preset,
+  vehiculo,
   id,
 }: {
   recorridos: Recorrido[]
   preset: PresetId
+  vehiculo: VehiculoId
   id: string
 }) {
   const recorrido = recorridos.find((r) => r.id === id)
@@ -231,6 +237,7 @@ export function VerdictView({
           modo={modoHoy}
           recorrido={recorrido}
           presetId={preset}
+          vehiculo={vehiculo}
         />
       )}
       {fc && dayMan && evalMan && (
@@ -242,13 +249,15 @@ export function VerdictView({
           modo="full"
           recorrido={recorrido}
           presetId={preset}
+          vehiculo={vehiculo}
         />
       )}
 
       {fc && (
         <p className="footer-note">
           {fc.stale && '⚠️ Sin conexión: mostrando datos viejos. '}
-          Perfil {p.emoji} {p.nombre} · Clima: Open-Meteo · Actualizado{' '}
+          {VEHICULOS[vehiculo].emoji} {VEHICULOS[vehiculo].nombre} · {p.emoji} {p.nombre} ·
+          Clima: Open-Meteo · Actualizado{' '}
           {new Date(fc.fetchedAt).toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' })}
         </p>
       )}
