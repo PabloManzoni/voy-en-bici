@@ -93,6 +93,45 @@ describe('veredicto', () => {
   })
 })
 
+describe('sensación térmica y combos', () => {
+  it('sensación manda: 9° reales con sensación 3° es NO GO para el promedio (corta en 5)', () => {
+    const day = mkDay([{ hour: 18, temp: 9, apparent: 3 }])
+    const r = eval_(day, 'promedio')
+    expect(r.go).toBe(false)
+    expect(r.vuelta.motivos[0].tipo).toBe('frio')
+    // sin dato de sensación cae al termómetro: 9° pasa
+    expect(eval_(mkDay([{ hour: 18, temp: 9 }]), 'promedio').go).toBe(true)
+  })
+
+  it('combo: llovizna probable + viento de frente al límite = NO GO aunque nada bloquee solo', () => {
+    // promedio: llovizna cuenta desde 30% (corta en 60), viento amarillo desde 22.5 (corta en 30)
+    // vuelta con rumbo 270 y viento desde 270 = de frente
+    const day = mkDay([{ hour: 18, code: 53, rainProb: 45, wind: 26, windFrom: 270 }])
+    const r = eval_(day, 'promedio')
+    expect(r.go).toBe(false)
+    expect(r.vuelta.motivos[0].tipo).toBe('combo')
+  })
+
+  it('el mismo combo con viento de cola no resta: GO', () => {
+    // vuelta con rumbo 270 y viento desde 90 = de cola
+    const day = mkDay([{ hour: 18, code: 53, rainProb: 45, wind: 26, windFrom: 90 }])
+    expect(eval_(day, 'promedio').go).toBe(true)
+  })
+
+  it('combo con frío: llovizna probable + sensación pegada al límite = NO GO', () => {
+    // promedio: sensación 6° está en zona amarilla (límite 5 + margen 3)
+    const day = mkDay([{ hour: 18, code: 53, rainProb: 45, temp: 10, apparent: 6 }])
+    const r = eval_(day, 'promedio')
+    expect(r.go).toBe(false)
+    expect(r.vuelta.motivos[0].tipo).toBe('combo')
+  })
+
+  it('lluvia casi imposible (5%) no arma combo aunque el viento esté al límite', () => {
+    const day = mkDay([{ hour: 18, code: 53, rainProb: 5, wind: 26, windFrom: 270 }])
+    expect(eval_(day, 'promedio').go).toBe(true)
+  })
+})
+
 describe('viento relativo', () => {
   it('viento que viene de donde vas = de frente', () => {
     expect(windRel(90, 90)).toBe('frente')

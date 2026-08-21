@@ -129,13 +129,13 @@ export function Settings({
               <td>50 km/h</td>
             </tr>
             <tr>
-              <td>Frío</td>
+              <td>Frío (sensación)</td>
               <td>&lt; 10°</td>
               <td>&lt; 5°</td>
               <td>&lt; 1°</td>
             </tr>
             <tr>
-              <td>Calor</td>
+              <td>Calor (sensación)</td>
               <td>&gt; 28°</td>
               <td>&gt; 30°</td>
               <td>&gt; 34°</td>
@@ -154,7 +154,12 @@ export function Settings({
             </tr>
           </tbody>
         </table>
-        <p className="thresholds-note">Tormenta eléctrica: nadie sale, sin discusión.</p>
+        <p className="thresholds-note">
+          Tormenta eléctrica: nadie sale, sin discusión. El frío y el calor se miden por la
+          sensación térmica (viento y humedad incluidos), no por el termómetro. Y si se junta
+          demasiado —lluvia probable más viento o temperatura al límite— también es NO GO,
+          salvo que el viento venga de cola: ese empuja, no resta.
+        </p>
       </details>
 
       <InstallCard />

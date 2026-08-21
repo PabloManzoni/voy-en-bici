@@ -62,8 +62,9 @@ export function motivoFrase(m: Motivo): string {
     case 'viento': return `viento de ${m.valor} km/h`
     case 'lluvia': return `lluvia (${m.valor}% de probabilidad)`
     case 'llovizna': return `llovizna (${m.valor}%)`
-    case 'frio': return `${m.valor}° de frío`
-    case 'calor': return `${m.valor}° de calor`
+    case 'frio': return `sensación de ${m.valor}°, mucho frío`
+    case 'calor': return `sensación de ${m.valor}°, demasiado calor`
+    case 'combo': return `se junta demasiado: ${m.partes?.join(' + ') ?? 'varias cosas al límite'}`
     case 'lluvia-dia': return `llovizna en algún momento del día (~${m.hora}:00)`
   }
 }
@@ -85,6 +86,11 @@ export function fraseResumen(dia: DiaEval, modo: 'full' | 'solo-vuelta', presetI
     }
     const base = `${cap(palabraClima(t.codeDominante))} y ${fraseTemp(t.temp)}`
     if (avisos.length > 0) return `${base}. Ojo: ${avisos[0]}.`
+    // el viento de cola es noticia buena: contarla
+    const empuje = [dia.ida, dia.vuelta].findIndex(
+      (tr) => tr.viento.rel === 'cola' && tr.viento.max >= 15,
+    )
+    if (empuje >= 0) return `${base}; el viento te empuja ${empuje === 0 ? 'a la ida' : 'a la vuelta'}.`
     return `${base}, sin drama.`
   }
 
@@ -94,7 +100,7 @@ export function fraseResumen(dia: DiaEval, modo: 'full' | 'solo-vuelta', presetI
     ...dia.vuelta.motivos.map((m) => ({ m, donde: 'a la vuelta' })),
     ...dia.motivosDia.map((m) => ({ m, donde: '' })),
   ].sort((a, b) => {
-    const s = ['tormenta', 'nieve', 'rafagas', 'viento', 'lluvia', 'llovizna', 'frio', 'calor', 'lluvia-dia']
+    const s = ['tormenta', 'nieve', 'rafagas', 'viento', 'lluvia', 'llovizna', 'frio', 'calor', 'combo', 'lluvia-dia']
     return s.indexOf(a.m.tipo) - s.indexOf(b.m.tipo)
   })
 

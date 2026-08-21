@@ -25,7 +25,12 @@ legible en el bundle público (riesgo aceptado; mitigable restringiendo la key p
   online de Open-Meteo; prioriza "cerca del usuario" por **zona horaria del dispositivo**
   (sin GPS, sin IP, sin permisos) — funciona en cualquier país
 - ✅ Veredicto: reglas deterministas (`src/lib/verdict.ts`), ida Y vuelta (AND), peor hora de la franja manda
-- ✅ Presets: Flojo / Promedio / Extremo (umbrales en `PRESETS`, un solo lugar)
+- ✅ Presets: Flojo / Promedio / Extremo (umbrales en `PRESETS`, un solo lugar; valores
+  finales elegidos por Pablo 21/08 y validados contra guías ciclistas)
+- ✅ Frío y calor por **sensación térmica** (fusiona viento+humedad; fallback a termómetro)
+- ✅ Capa **"se junta demasiado"**: lluvia desde la mitad del umbral + viento o temperatura
+  en zona amarilla (≥75% del límite) → NO GO explicado. El viento **de cola no cuenta**
+  (empuja, no resta) — dirección evaluada por tramo, ida y vuelta por separado
 - ✅ Clima: Open-Meteo (gratis, sin key), cache 30 min en localStorage, fallback a datos viejos sin red
 - ✅ Explicaciones: plantillas al instante (`explain.ts`) + Gemini las reemplaza async (`ai.ts`), cache por contenido
 - ✅ Viento relativo: rumbo del recorrido vs dirección del viento → de frente / cruzado / de cola (solo narra, no decide)

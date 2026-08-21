@@ -24,17 +24,19 @@ export type MotivoTipo =
   | 'viento'
   | 'frio'
   | 'calor'
+  | 'combo'
   | 'lluvia-dia'
 
 export interface Motivo {
   tipo: MotivoTipo
   valor: number // el número que disparó (km/h, °C, % según tipo)
   hora: number
+  partes?: string[] // solo 'combo': los factores que se juntaron
 }
 
 // Orden de gravedad para elegir qué contar primero.
 const SEVERIDAD: MotivoTipo[] = [
-  'tormenta', 'nieve', 'rafagas', 'viento', 'lluvia', 'llovizna', 'frio', 'calor', 'lluvia-dia',
+  'tormenta', 'nieve', 'rafagas', 'viento', 'lluvia', 'llovizna', 'frio', 'calor', 'combo', 'lluvia-dia',
 ]
 export function masGrave(a: Motivo, b: Motivo): number {
   return SEVERIDAD.indexOf(a.tipo) - SEVERIDAD.indexOf(b.tipo)
@@ -151,11 +153,54 @@ export function evalHour(h: HourData, u: Umbrales): Motivo[] {
   if (cat === 'llovizna' && prob >= u.probLlovizna) motivos.push({ tipo: 'llovizna', valor: prob, hora: h.hour })
   if (h.gust >= u.rafagaMax) motivos.push({ tipo: 'rafagas', valor: Math.round(h.gust), hora: h.hour })
   if (h.wind >= u.vientoMax) motivos.push({ tipo: 'viento', valor: Math.round(h.wind), hora: h.hour })
-  // floor/ceil para que el número mostrado nunca contradiga el umbral
-  // (7.6° con umbral "< 8" debe decir 7°, no 8°)
-  if (h.temp < u.tempMin) motivos.push({ tipo: 'frio', valor: Math.floor(h.temp), hora: h.hour })
-  if (h.temp > u.tempMax) motivos.push({ tipo: 'calor', valor: Math.ceil(h.temp), hora: h.hour })
+  // Frío y calor se miden por SENSACIÓN térmica (viento y humedad incluidos):
+  // 9° de termómetro con sensación de 3° son 3° para tu cuerpo.
+  // floor/ceil para que el número mostrado nunca contradiga el umbral.
+  const tEff = h.apparent ?? h.temp
+  if (tEff < u.tempMin) motivos.push({ tipo: 'frio', valor: Math.floor(tEff), hora: h.hour })
+  if (tEff > u.tempMax) motivos.push({ tipo: 'calor', valor: Math.ceil(tEff), hora: h.hour })
   return motivos
+}
+
+// ── Capa "se junta demasiado" ───────────────────────────────────────────────
+// Un AND de umbrales sueltos no ve la miseria combinada: llovizna probable
+// + viento al límite + frío pegado al umbral puede dar GO aunque el día sea
+// un caos. La sensación térmica ya fusiona frío+viento+humedad; lo único
+// suelto es la lluvia, así que la regla acopla la lluvia con el resto:
+// lluvia desde la MITAD de tu umbral + viento o temperatura en zona amarilla
+// (≥75% del límite) → NO GO. El viento de cola no cuenta: empuja, no resta.
+const ZONA_AMARILLA = 0.75
+const MARGEN_TEMP = 3
+
+export function comboHora(h: HourData, heading: number, u: Umbrales): Motivo | null {
+  const cat = catLluvia(h.code)
+  if (!cat || cat === 'tormenta' || cat === 'nieve') return null
+  const prob = h.rainProb ?? 100
+  const umbralProb =
+    cat === 'fuerte' ? u.probLluviaFuerte : cat === 'leve' ? u.probLluviaLeve : u.probLlovizna
+  // o ya bloquea sola, o es demasiado improbable para contar
+  if (prob < umbralProb / 2 || prob >= umbralProb) return null
+
+  const partes: string[] = [`${cat === 'llovizna' ? 'llovizna' : 'lluvia'} ${prob}%`]
+
+  const rel = windRel(heading, h.windFrom)
+  const ratioViento = Math.max(h.wind / u.vientoMax, h.gust / u.rafagaMax)
+  if (rel !== 'cola' && ratioViento >= ZONA_AMARILLA && ratioViento < 1) {
+    partes.push(
+      h.gust / u.rafagaMax >= h.wind / u.vientoMax
+        ? `ráfagas de ${Math.round(h.gust)}`
+        : `viento${rel === 'frente' ? ' de frente' : ''} de ${Math.round(h.wind)}`,
+    )
+  }
+
+  const tEff = h.apparent ?? h.temp
+  if (tEff >= u.tempMin && tEff < u.tempMin + MARGEN_TEMP)
+    partes.push(`sensación de ${Math.floor(tEff)}°`)
+  else if (tEff <= u.tempMax && tEff > u.tempMax - MARGEN_TEMP)
+    partes.push(`sensación de ${Math.ceil(tEff)}°`)
+
+  if (partes.length < 2) return null
+  return { tipo: 'combo', valor: prob, hora: h.hour, partes }
 }
 
 export interface TramoEval {
@@ -170,7 +215,8 @@ export interface TramoEval {
 export function evalTramo(hours: HourData[], heading: number, u: Umbrales): TramoEval {
   const porTipo = new Map<MotivoTipo, Motivo>()
   for (const h of hours) {
-    for (const m of evalHour(h, u)) {
+    const combo = comboHora(h, heading, u)
+    for (const m of [...evalHour(h, u), ...(combo ? [combo] : [])]) {
       const prev = porTipo.get(m.tipo)
       if (!prev || m.valor > prev.valor) porTipo.set(m.tipo, m)
     }
