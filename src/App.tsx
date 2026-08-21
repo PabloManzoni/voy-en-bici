@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
 import type { PresetId, Recorrido, VehiculoId } from './types'
 import {
+  loadOnboarded,
   loadPreset,
   loadRecorridos,
   loadVehiculo,
+  marcarOnboarded,
   savePreset,
   saveRecorridos,
   saveVehiculo,
 } from './lib/storage'
 import { Home } from './components/Home'
+import { Onboarding } from './components/Onboarding'
 import { RouteForm } from './components/RouteForm'
 import { VerdictView } from './components/VerdictView'
 import { Settings } from './components/Settings'
@@ -32,6 +35,16 @@ export default function App() {
   const [recorridos, setRecorridos] = useState<Recorrido[]>(loadRecorridos)
   const [preset, setPreset] = useState<PresetId>(loadPreset)
   const [vehiculo, setVehiculo] = useState<VehiculoId>(loadVehiculo)
+  const [onboarded, setOnboarded] = useState<boolean>(loadOnboarded)
+
+  // Quien ya tiene recorridos nunca ve el onboarding (queda con sus valores
+  // o los defaults: bici urbana + promedio).
+  useEffect(() => {
+    if (recorridos.length > 0 && !onboarded) {
+      marcarOnboarded()
+      setOnboarded(true)
+    }
+  }, [recorridos.length, onboarded])
 
   const updateRecorridos = (rs: Recorrido[]) => {
     setRecorridos(rs)
@@ -62,6 +75,18 @@ export default function App() {
         onChange={updatePreset}
         vehiculo={vehiculo}
         onChangeVehiculo={updateVehiculo}
+      />
+    )
+  } else if (recorridos.length === 0 && !onboarded) {
+    view = (
+      <Onboarding
+        onVehiculo={updateVehiculo}
+        onPreset={updatePreset}
+        onCompleto={() => {
+          marcarOnboarded()
+          setOnboarded(true)
+          nav('/new')
+        }}
       />
     )
   } else {

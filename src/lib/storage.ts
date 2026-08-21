@@ -58,6 +58,18 @@ export function savePreset(p: PresetId): void {
   localStorage.setItem(K_PRESET, p)
 }
 
+const K_ONBOARDED = 'vb.onboarded'
+
+// El onboarding se muestra UNA sola vez: la primera apertura sin recorridos
+// ni configuración. Completarlo (o ya tener recorridos) lo apaga para siempre.
+export function loadOnboarded(): boolean {
+  return localStorage.getItem(K_ONBOARDED) === '1'
+}
+
+export function marcarOnboarded(): void {
+  localStorage.setItem(K_ONBOARDED, '1')
+}
+
 export function loadVehiculo(): VehiculoId {
   const v = localStorage.getItem(K_VEHICULO)
   return v === 'deportivo' || v === 'ebike' || v === 'monopatin' || v === 'moto' ? v : 'bici'

@@ -95,7 +95,13 @@ export function RouteForm({
         <button className="icon-btn" aria-label="Volver" onClick={() => nav('/')}>
           ←
         </button>
-        <h1>{editando ? 'Editar recorrido' : 'Nuevo recorrido'}</h1>
+        <h1>
+          {editando
+            ? 'Editar recorrido'
+            : recorridos.length === 0
+              ? '3 de 3 · Tu primer recorrido'
+              : 'Nuevo recorrido'}
+        </h1>
         <span className="icon-btn" />
       </header>
 

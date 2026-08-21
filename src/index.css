@@ -842,6 +842,45 @@ select {
   line-height: 1.5;
 }
 
+/* ── Onboarding ──────────────────────────── */
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 14px;
+}
+
+.ob-head {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.ob-head h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ob-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 300px;
+  line-height: 1.45;
+}
+
+.ob-nota {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12.5px;
+  margin: 2px 0 0;
+}
+
 /* ── Skeleton ────────────────────────────── */
 .skeleton {
   min-height: 210px;
