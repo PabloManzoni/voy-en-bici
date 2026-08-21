@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { PresetId, VehiculoId } from '../types'
 import { PRESETS } from '../lib/verdict'
-import { VEHICULOS } from '../lib/vehiculos'
+import { reglasExtraDe, umbralesDe, VEHICULOS } from '../lib/vehiculos'
 import { iaDisponible } from '../lib/ai'
 import { nav } from '../App'
 import { PhoneIcon } from './Icons'
@@ -106,8 +106,8 @@ export function Settings({
         ))}
       </div>
       <p className="settings-nota">
-        Por ahora todos los vehículos usan los límites de bici urbana — los ajustes finos por
-        vehículo están en camino.
+        Cada vehículo tiene sus propios límites de viento, lluvia y temperatura — los ves
+        abajo, en "los números".
       </p>
 
       <p className="section-title">Tu perfil de conductor</p>
@@ -133,60 +133,86 @@ export function Settings({
       </div>
 
       <details className="thresholds">
-        <summary>¿Qué mira cada perfil? (los números)</summary>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>💅 Flojo</th>
-              <th>👍 Promedio</th>
-              <th>🥚 Extremo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Viento sostenido</td>
-              <td>20 km/h</td>
-              <td>30 km/h</td>
-              <td>40 km/h</td>
-            </tr>
-            <tr>
-              <td>Ráfagas</td>
-              <td>30 km/h</td>
-              <td>40 km/h</td>
-              <td>50 km/h</td>
-            </tr>
-            <tr>
-              <td>Frío (sensación)</td>
-              <td>&lt; 10°</td>
-              <td>&lt; 5°</td>
-              <td>&lt; 1°</td>
-            </tr>
-            <tr>
-              <td>Calor (sensación)</td>
-              <td>&gt; 28°</td>
-              <td>&gt; 30°</td>
-              <td>&gt; 34°</td>
-            </tr>
-            <tr>
-              <td>Llovizna</td>
-              <td>en todo el día, no</td>
-              <td>en tu horario, no</td>
-              <td>va igual</td>
-            </tr>
-            <tr>
-              <td>Lluvia</td>
-              <td>no</td>
-              <td>no</td>
-              <td>solo si es fuerte, no</td>
-            </tr>
-          </tbody>
-        </table>
+        <summary>
+          Los números de tu vehículo ({VEHICULOS[vehiculo].nombre.toLowerCase()})
+        </summary>
+        {(() => {
+          const u = umbralesDe(vehiculo)
+          const pct = (n: number) => (n === 999 ? 'nunca' : `${n}%`)
+          return (
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>💅 Flojo</th>
+                  <th>👍 Promedio</th>
+                  <th>🥚 Extremo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Viento sostenido</td>
+                  <td>{u.flojo.vientoMax} km/h</td>
+                  <td>{u.promedio.vientoMax} km/h</td>
+                  <td>{u.extremo.vientoMax} km/h</td>
+                </tr>
+                <tr>
+                  <td>Ráfagas</td>
+                  <td>{u.flojo.rafagaMax} km/h</td>
+                  <td>{u.promedio.rafagaMax} km/h</td>
+                  <td>{u.extremo.rafagaMax} km/h</td>
+                </tr>
+                <tr>
+                  <td>Frío (sensación)</td>
+                  <td>&lt; {u.flojo.tempMin}°</td>
+                  <td>&lt; {u.promedio.tempMin}°</td>
+                  <td>&lt; {u.extremo.tempMin}°</td>
+                </tr>
+                <tr>
+                  <td>Calor (sensación)</td>
+                  <td>&gt; {u.flojo.tempMax}°</td>
+                  <td>&gt; {u.promedio.tempMax}°</td>
+                  <td>&gt; {u.extremo.tempMax}°</td>
+                </tr>
+                <tr>
+                  <td>Lluvia fuerte</td>
+                  <td>{pct(u.flojo.probLluviaFuerte)}</td>
+                  <td>{pct(u.promedio.probLluviaFuerte)}</td>
+                  <td>{pct(u.extremo.probLluviaFuerte)}</td>
+                </tr>
+                <tr>
+                  <td>Lluvia leve</td>
+                  <td>{pct(u.flojo.probLluviaLeve)}</td>
+                  <td>{pct(u.promedio.probLluviaLeve)}</td>
+                  <td>{pct(u.extremo.probLluviaLeve)}</td>
+                </tr>
+                <tr>
+                  <td>Llovizna</td>
+                  <td>{pct(u.flojo.probLlovizna)}</td>
+                  <td>{pct(u.promedio.probLlovizna)}</td>
+                  <td>{pct(u.extremo.probLlovizna)}</td>
+                </tr>
+                <tr>
+                  <td>Mira la lluvia en…</td>
+                  <td>todo el día</td>
+                  <td>tus horarios</td>
+                  <td>tus horarios</td>
+                </tr>
+              </tbody>
+            </table>
+          )
+        })()}
+        {reglasExtraDe(vehiculo).map((n) => (
+          <p key={n} className="thresholds-note">
+            {n}
+          </p>
+        ))}
         <p className="thresholds-note">
+          Los porcentajes son la probabilidad mínima de esa lluvia para frenar el veredicto.
           Tormenta eléctrica: nadie sale, sin discusión. El frío y el calor se miden por la
-          sensación térmica (viento y humedad incluidos), no por el termómetro. Y si se junta
-          demasiado —lluvia probable más viento o temperatura al límite— también es NO GO,
-          salvo que el viento venga de cola: ese empuja, no resta.
+          sensación térmica (viento y humedad incluidos). Y si se junta demasiado —lluvia
+          probable más viento o temperatura al límite— también es no, salvo que el viento
+          venga de cola: ese empuja, no resta.
         </p>
       </details>
 

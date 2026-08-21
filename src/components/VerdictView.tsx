@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { PresetId, Recorrido, VehiculoId } from '../types'
 import { VEHICULOS } from '../lib/vehiculos'
+import type { Umbrales } from '../lib/verdict'
 import { franjaById } from '../lib/franjas'
 import { bearing, puntoMedio } from '../lib/geo'
 import { getForecast, hoyLocal, invalidarForecast, type Forecast, type ForecastDay } from '../lib/weather'
-import { evalDia, PRESETS, type DiaEval } from '../lib/verdict'
+import { evalDia, PRESETS, type ConfigEval, type DiaEval } from '../lib/verdict'
+import { configEval } from '../lib/vehiculos'
 import { fraseBadge, fraseResumen, fraseTramo } from '../lib/explain'
 import { explicacionIA } from '../lib/ai'
 import { DayStrip } from './DayStrip'
@@ -22,6 +24,7 @@ function DayCard({
   recorrido,
   presetId,
   vehiculo,
+  umbrales,
 }: {
   titulo: string
   fecha: Date
@@ -31,6 +34,7 @@ function DayCard({
   recorrido: Recorrido
   presetId: PresetId
   vehiculo: VehiculoId
+  umbrales: Umbrales
 }) {
   const fIda = franjaById(recorrido.franjaIda)
   const fVuelta = franjaById(recorrido.franjaVuelta)
@@ -60,8 +64,6 @@ function DayCard({
 
   const fechaLabel = fecha.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric' })
 
-  const umbrales = PRESETS[presetId].umbrales
-
   if (modo === 'pasado') {
     return (
       <section className="day-card day-past">
@@ -77,7 +79,7 @@ function DayCard({
     )
   }
 
-  const resumen = texto ?? fraseResumen(modo === 'solo-vuelta' ? { ...dia, go } : dia, modo, presetId)
+  const resumen = texto ?? fraseResumen(modo === 'solo-vuelta' ? { ...dia, go } : dia, modo, umbrales)
 
   return (
     <section className={`day-card ${go ? 'day-go' : 'day-nogo'}`}>
@@ -165,11 +167,13 @@ export function VerdictView({
   const dayHoy = fc?.days.find((d) => d.date === hoyStr)
   const dayMan = fc?.days.find((d) => d.date > hoyStr)
 
+  const cfg: ConfigEval = useMemo(() => configEval(vehiculo, preset), [vehiculo, preset])
+
   const evalHoy = dayHoy
-    ? evalDia(dayHoy.hours, recorrido.franjaIda, recorrido.franjaVuelta, heading, preset)
+    ? evalDia(dayHoy.hours, recorrido.franjaIda, recorrido.franjaVuelta, heading, cfg)
     : null
   const evalMan = dayMan
-    ? evalDia(dayMan.hours, recorrido.franjaIda, recorrido.franjaVuelta, heading, preset)
+    ? evalDia(dayMan.hours, recorrido.franjaIda, recorrido.franjaVuelta, heading, cfg)
     : null
 
   const ahora = new Date()
@@ -238,6 +242,7 @@ export function VerdictView({
           recorrido={recorrido}
           presetId={preset}
           vehiculo={vehiculo}
+          umbrales={cfg.umbrales}
         />
       )}
       {fc && dayMan && evalMan && (
@@ -250,6 +255,7 @@ export function VerdictView({
           recorrido={recorrido}
           presetId={preset}
           vehiculo={vehiculo}
+          umbrales={cfg.umbrales}
         />
       )}
 

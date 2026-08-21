@@ -1,6 +1,4 @@
-import type { DiaEval, Motivo, Rel, TramoEval } from './verdict'
-import { PRESETS } from './verdict'
-import type { PresetId } from '../types'
+import type { DiaEval, Motivo, Rel, TramoEval, Umbrales } from './verdict'
 
 export const EMOJI_CODE: Array<[number[], string]> = [
   [[0], '☀️'],
@@ -54,12 +52,21 @@ export function fraseTramo(t: TramoEval): string {
   return `${fraseTemp(t.temp)}, ${palabraClima(t.codeDominante)}, ${fraseViento(t.viento)}`
 }
 
+const REL_ADJ: Record<Rel, string> = { frente: ' de frente', cruzado: ' cruzado', cola: '' }
+const REL_ADJ_F: Record<Rel, string> = { frente: ' de frente', cruzado: ' cruzadas', cola: '' }
+
 export function motivoFrase(m: Motivo): string {
   switch (m.tipo) {
     case 'tormenta': return `tormenta eléctrica (${m.valor}% de probabilidad)`
     case 'nieve': return 'nieve (sí, nieve)'
-    case 'rafagas': return `ráfagas de ${m.valor} km/h`
-    case 'viento': return `viento de ${m.valor} km/h`
+    case 'piso-mojado':
+      return m.valor > 0
+        ? `el piso sigue mojado (${m.valor} mm recientes) — no con estas ruedas`
+        : 'llueve a esa hora: piso mojado, no con estas ruedas'
+    case 'rafagas':
+      return `ráfagas${m.rel ? REL_ADJ_F[m.rel] : ''} de ${m.valor} km/h${m.limite ? ` (tu límite acá: ${m.limite})` : ''}`
+    case 'viento':
+      return `viento${m.rel ? REL_ADJ[m.rel] : ''} de ${m.valor} km/h${m.limite ? ` (tu límite acá: ${m.limite})` : ''}`
     case 'lluvia': return `lluvia (${m.valor}% de probabilidad)`
     case 'llovizna': return `llovizna (${m.valor}%)`
     case 'frio': return `sensación de ${m.valor}°, mucho frío`
@@ -70,11 +77,10 @@ export function motivoFrase(m: Motivo): string {
 }
 
 // Resumen de una línea bajo el veredicto (fallback si no hay IA).
-export function fraseResumen(dia: DiaEval, modo: 'full' | 'solo-vuelta', presetId: PresetId): string {
+export function fraseResumen(dia: DiaEval, modo: 'full' | 'solo-vuelta', u: Umbrales): string {
   if (dia.go) {
     const t = modo === 'solo-vuelta' ? dia.vuelta : dia.ida
     const avisos: string[] = []
-    const u = PRESETS[presetId].umbrales
     const peor = [dia.ida, dia.vuelta]
     for (const [i, tramo] of peor.entries()) {
       const donde = i === 0 ? 'a la ida' : 'a la vuelta'
@@ -100,7 +106,7 @@ export function fraseResumen(dia: DiaEval, modo: 'full' | 'solo-vuelta', presetI
     ...dia.vuelta.motivos.map((m) => ({ m, donde: 'a la vuelta' })),
     ...dia.motivosDia.map((m) => ({ m, donde: '' })),
   ].sort((a, b) => {
-    const s = ['tormenta', 'nieve', 'rafagas', 'viento', 'lluvia', 'llovizna', 'frio', 'calor', 'combo', 'lluvia-dia']
+    const s = ['tormenta', 'nieve', 'piso-mojado', 'rafagas', 'viento', 'lluvia', 'llovizna', 'frio', 'calor', 'combo', 'lluvia-dia']
     return s.indexOf(a.m.tipo) - s.indexOf(b.m.tipo)
   })
 

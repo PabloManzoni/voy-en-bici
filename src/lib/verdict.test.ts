@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { evalDia, windRel, type HourData } from './verdict'
+import { configEval } from './vehiculos'
+import type { PresetId, VehiculoId } from '../types'
 
 function mkHour(over: Partial<HourData> = {}): HourData {
   return {
@@ -23,8 +25,10 @@ function mkDay(overrides: Array<Partial<HourData> & { hour: number }> = []): Hou
 }
 
 // Recorrido de prueba: ida Mañana (8-11), vuelta Tarde (17-20), rumbo este (90°).
-const eval_ = (day: HourData[], preset: 'flojo' | 'promedio' | 'extremo') =>
-  evalDia(day, 'manana', 'tarde', 90, preset)
+// A la ida: windFrom 90 = frente, 0/180 = cruzado, 270 = cola.
+const evalV = (day: HourData[], veh: VehiculoId, preset: PresetId) =>
+  evalDia(day, 'manana', 'tarde', 90, configEval(veh, preset))
+const eval_ = (day: HourData[], preset: PresetId) => evalV(day, 'bici', preset)
 
 describe('veredicto', () => {
   it('día lindo es GO para todos', () => {
@@ -129,6 +133,65 @@ describe('sensación térmica y combos', () => {
   it('lluvia casi imposible (5%) no arma combo aunque el viento esté al límite', () => {
     const day = mkDay([{ hour: 18, code: 53, rainProb: 5, wind: 26, windFrom: 270 }])
     expect(eval_(day, 'promedio').go).toBe(true)
+  })
+})
+
+describe('matriz por vehículo (casos del doc de investigación)', () => {
+  it('deportivo común: viento de frente 26 bloquea (límite efectivo 30×0.85=26); de cola 29 pasa', () => {
+    const frente = mkDay([{ hour: 9, wind: 26, windFrom: 90 }])
+    const r = evalV(frente, 'deportivo', 'promedio')
+    expect(r.ida.go).toBe(false)
+    expect(r.ida.motivos[0].tipo).toBe('viento')
+    expect(r.ida.motivos[0].limite).toBe(26)
+    const cola = mkDay([{ hour: 9, wind: 29, windFrom: 270 }])
+    expect(evalV(cola, 'deportivo', 'promedio').ida.go).toBe(true)
+    // en bici urbana ese mismo frente de 26 pasa (límite 30 sin factor)
+    expect(evalV(frente, 'bici', 'promedio').ida.go).toBe(true)
+  })
+
+  it('deportivo común: ráfaga cruzada 34 bloquea (40×0.85=34); calor a sensación 30 bloquea (>29)', () => {
+    const cruzada = mkDay([{ hour: 9, gust: 34, windFrom: 0 }])
+    expect(evalV(cruzada, 'deportivo', 'promedio').ida.go).toBe(false)
+    const calor = mkDay([{ hour: 9, temp: 27, apparent: 30 }])
+    expect(evalV(calor, 'deportivo', 'promedio').ida.go).toBe(false)
+    expect(evalV(calor, 'bici', 'promedio').ida.go).toBe(true) // bici corta en 30
+  })
+
+  it('e-bike común: banca viento 34 (corta en 35) pero la ráfaga 40 bloquea igual que bici', () => {
+    expect(evalV(mkDay([{ hour: 9, wind: 34, windFrom: 90 }]), 'ebike', 'promedio').go).toBe(true)
+    expect(evalV(mkDay([{ hour: 9, wind: 35, windFrom: 90 }]), 'ebike', 'promedio').go).toBe(false)
+    expect(evalV(mkDay([{ hour: 9, gust: 40 }]), 'ebike', 'promedio').go).toBe(false)
+    // flojo e-bike siente el frío antes: sensación 11.9 < 12 bloquea
+    expect(evalV(mkDay([{ hour: 9, temp: 14, apparent: 11.9 }]), 'ebike', 'flojo').go).toBe(false)
+  })
+
+  it('monopatín: ráfaga cruzada 28 frena al común (35×0.80=28); de cola 44 no frena al extremo', () => {
+    expect(evalV(mkDay([{ hour: 9, gust: 28, windFrom: 0 }]), 'monopatin', 'promedio').go).toBe(false)
+    expect(evalV(mkDay([{ hour: 9, gust: 44, windFrom: 270 }]), 'monopatin', 'extremo').ida.go).toBe(true)
+  })
+
+  it('monopatín: piso mojado es NO GO absoluto — lluvia en la hora, o caída en las 2 horas previas', () => {
+    // llueve en la hora evaluada
+    const ahora = mkDay([{ hour: 9, precip: 0.1, code: 61, rainProb: 20 }])
+    const r = evalV(ahora, 'monopatin', 'extremo')
+    expect(r.go).toBe(false)
+    expect(r.ida.motivos[0].tipo).toBe('piso-mojado')
+    // llovió a las 7 (fuera de la franja): a las 8 el piso sigue mojado
+    const antes = mkDay([{ hour: 7, precip: 0.3 }])
+    expect(evalV(antes, 'monopatin', 'promedio').ida.go).toBe(false)
+    // acumulado 0.5 mm entre las dos horas previas
+    const suma = mkDay([{ hour: 7, precip: 0.4 }, { hour: 8, precip: 0.1 }])
+    expect(evalV(suma, 'monopatin', 'flojo').ida.go).toBe(false)
+    // la bici con la misma agua previa no tiene esa regla
+    expect(evalV(antes, 'bici', 'extremo').ida.go).toBe(true)
+  })
+
+  it('moto común: cruzado endurece (viento 32=40×0.8, ráfaga 47=55×0.85); de frente banca 39', () => {
+    expect(evalV(mkDay([{ hour: 9, wind: 32, windFrom: 0 }]), 'moto', 'promedio').ida.go).toBe(false)
+    expect(evalV(mkDay([{ hour: 9, gust: 47, windFrom: 0 }]), 'moto', 'promedio').ida.go).toBe(false)
+    expect(evalV(mkDay([{ hour: 9, wind: 39, windFrom: 90 }]), 'moto', 'promedio').ida.go).toBe(true)
+    // ráfaga 65 frena hasta al extremo, venga de donde venga
+    expect(evalV(mkDay([{ hour: 9, gust: 65, windFrom: 270 }]), 'moto', 'extremo').ida.go).toBe(false)
   })
 })
 

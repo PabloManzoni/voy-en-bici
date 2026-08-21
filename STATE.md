@@ -31,9 +31,14 @@ legible en el bundle público (riesgo aceptado; mitigable restringiendo la key p
   finales elegidos por Pablo 21/08 y validados contra guías ciclistas)
 - ✅ Vehículos: Bici urbana / Ciclismo deportivo / E-bike / Monopatín / Moto — selector en
   Ajustes (arriba del perfil), persistido, mostrado en el veredicto y pasado a la IA.
-  **PENDIENTE**: la matriz de umbrales vehículo×conductor (encargo redactado en
-  `docs/LOGICA-CLIMA.md`; Pablo lo lleva a otro agente y trae los números). Hasta entonces
-  todos los vehículos usan los límites de bici urbana (avisado en la UI).
+- ✅ **Matriz vehículo×conductor implementada** (21/08, investigación externa aprobada por
+  Pablo — fuentes: Beaufort, Cycling UK, ACSM, Bosch, Xiaomi/Segway, NHTSA/MSF):
+  umbrales propios por vehículo (`src/lib/vehiculos.ts` → `MATRIZ`), **límites efectivos por
+  dirección** (deportivo: frente 0.85 / cruzado 0.90-0.85; monopatín: cruzado 0.85-0.80;
+  moto: cruzado 0.80-0.85), **piso mojado = NO GO absoluto para monopatín** (lluvia en la
+  hora o ≥0.2 mm en las 2 previas), combos por vehículo (0.65-0.75, moto por dirección).
+  Bici urbana quedó intacta como baseline. La tabla de Ajustes muestra los números del
+  vehículo elegido, dinámica desde la matriz. 28 tests, incluidos los casos del doc.
 - ✅ Frío y calor por **sensación térmica** (fusiona viento+humedad; fallback a termómetro)
 - ✅ Capa **"se junta demasiado"**: lluvia desde la mitad del umbral + viento o temperatura
   en zona amarilla (≥75% del límite) → NO GO explicado. El viento **de cola no cuenta**
