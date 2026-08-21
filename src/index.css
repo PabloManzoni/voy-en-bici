@@ -794,6 +794,39 @@ select {
   margin: 0;
 }
 
+.install-paso {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 8px;
+  color: var(--ink);
+  flex-wrap: wrap;
+}
+
+.install-paso svg {
+  vertical-align: middle;
+}
+
+.paso-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--lav-soft);
+  color: var(--lav);
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.install-paso-nota {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .install-ok {
   color: var(--mint);
   font-weight: 700;

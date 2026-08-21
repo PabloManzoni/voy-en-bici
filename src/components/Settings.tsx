@@ -4,7 +4,7 @@ import { PRESETS } from '../lib/verdict'
 import { reglasExtraDe, umbralesDe, VEHICULOS } from '../lib/vehiculos'
 import { iaDisponible } from '../lib/ai'
 import { nav } from '../App'
-import { PhoneIcon } from './Icons'
+import { PhoneIcon, PlusSquareIcon, ShareIOSIcon } from './Icons'
 
 interface PromptInstalacion extends Event {
   prompt: () => Promise<void>
@@ -33,7 +33,19 @@ function InstallCard() {
     }
   }, [])
 
-  const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
+  const [copiado, setCopiado] = useState(false)
+  const ua = navigator.userAgent
+  const esIOS = /iphone|ipad|ipod/i.test(ua)
+  const esAndroid = /android/i.test(ua)
+  // En iPhone SOLO Safari puede instalar; Chrome/Firefox/webviews de apps, no.
+  const esSafariIOS = esIOS && /safari/i.test(ua) && !/crios|fxios|edgios|opios|instagram|fban|fbav|; wv/i.test(ua)
+
+  const copiarLink = () => {
+    navigator.clipboard?.writeText('https://bici.tuggsy.com').then(() => {
+      setCopiado(true)
+      setTimeout(() => setCopiado(false), 2500)
+    })
+  }
 
   return (
     <div className="install-card">
@@ -43,6 +55,7 @@ function InstallCard() {
       {instalada ? (
         <p className="install-ok">Ya está instalada en este dispositivo ✓</p>
       ) : promptEvento ? (
+        // Android / Chrome de escritorio: instalación directa con un toque.
         <>
           <p className="install-body">
             Instalada abre al toque y tus recorridos no se borran nunca.
@@ -51,11 +64,36 @@ function InstallCard() {
             Instalar la app
           </button>
         </>
+      ) : esSafariIOS ? (
+        // iPhone en Safari: Apple no permite instalar por código — pasos con íconos.
+        <div className="install-body">
+          <p className="install-paso">
+            <span className="paso-num">1</span> Tocá <strong>Compartir</strong>{' '}
+            <ShareIOSIcon color="var(--sky)" /> en la barra de abajo
+          </p>
+          <p className="install-paso">
+            <span className="paso-num">2</span> Elegí{' '}
+            <strong>«Agregar a pantalla de inicio»</strong> <PlusSquareIcon color="var(--sky)" />
+          </p>
+          <p className="install-paso-nota">
+            (Apple no deja que la app lo haga sola — son dos toques, una sola vez.)
+          </p>
+        </div>
       ) : esIOS ? (
+        // iPhone pero en Chrome/otro navegador: solo Safari puede instalar.
+        <>
+          <p className="install-body">
+            En iPhone <strong>solo Safari</strong> puede instalar apps web. Abrí{' '}
+            <strong>bici.tuggsy.com</strong> en Safari y ahí la agregás en dos toques.
+          </p>
+          <button className="btn-mini" onClick={copiarLink}>
+            {copiado ? '¡Link copiado!' : 'Copiar el link'}
+          </button>
+        </>
+      ) : esAndroid ? (
         <p className="install-body">
-          En Safari: tocá <strong>Compartir</strong> y elegí{' '}
-          <strong>«Agregar a pantalla de inicio»</strong>. Así abre como app y tus recorridos no
-          se borran nunca.
+          Menú <strong>⋮</strong> del navegador → <strong>«Instalar app»</strong>. (Cuando el
+          navegador lo permite, acá aparece un botón directo.)
         </p>
       ) : (
         <p className="install-body">

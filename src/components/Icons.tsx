@@ -208,6 +208,31 @@ export function RefreshIcon({ size = 19, color = 'currentColor' }: { size?: numb
   )
 }
 
+// El "Compartir" de iOS: cuadrado con flecha para arriba.
+export function ShareIOSIcon({ size = 16, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <Svg size={size}>
+      <g {...S} stroke={color}>
+        <path d="M12 2v13" />
+        <path d="m16 6-4-4-4 4" />
+        <path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" />
+      </g>
+    </Svg>
+  )
+}
+
+export function PlusSquareIcon({ size = 16, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <Svg size={size}>
+      <g {...S} stroke={color}>
+        <rect x="3" y="3" width="18" height="18" rx="4" />
+        <path d="M12 8v8" />
+        <path d="M8 12h8" />
+      </g>
+    </Svg>
+  )
+}
+
 export function PhoneIcon({ size = 20, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <Svg size={size}>
