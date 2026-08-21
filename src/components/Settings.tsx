@@ -114,6 +114,53 @@ function VehiculoPicker({
   )
 }
 
+// Mismo patrón para el perfil de conductor.
+function PresetPicker({
+  preset,
+  onChange,
+}: {
+  preset: PresetId
+  onChange: (p: PresetId) => void
+}) {
+  const [eligiendo, setEligiendo] = useState(false)
+  const actual = PRESETS[preset]
+
+  if (!eligiendo) {
+    return (
+      <button className="preset-card preset-slim" onClick={() => setEligiendo(true)}>
+        <span className="preset-emoji">{actual.emoji}</span>
+        <span className="preset-body">
+          <strong>{actual.nombre}</strong>
+          <span>{actual.descripcion}</span>
+        </span>
+        <span className="lugar-cambiar">cambiar</span>
+      </button>
+    )
+  }
+
+  return (
+    <div className="preset-list">
+      {Object.values(PRESETS).map((p) => (
+        <button
+          key={p.id}
+          className={`preset-card ${preset === p.id ? 'preset-on' : ''}`}
+          onClick={() => {
+            onChange(p.id)
+            setEligiendo(false)
+          }}
+        >
+          <span className="preset-emoji">{p.emoji}</span>
+          <span className="preset-body">
+            <strong>{p.nombre}</strong>
+            <span>{p.descripcion}</span>
+          </span>
+          {preset === p.id && <span className="preset-check">✓</span>}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function Settings({
   preset,
   onChange,
@@ -147,22 +194,7 @@ export function Settings({
         Define qué tan feo tiene que estar el día para que te diga que no.
       </p>
 
-      <div className="preset-list">
-        {Object.values(PRESETS).map((p) => (
-          <button
-            key={p.id}
-            className={`preset-card ${preset === p.id ? 'preset-on' : ''}`}
-            onClick={() => onChange(p.id)}
-          >
-            <span className="preset-emoji">{p.emoji}</span>
-            <span className="preset-body">
-              <strong>{p.nombre}</strong>
-              <span>{p.descripcion}</span>
-            </span>
-            {preset === p.id && <span className="preset-check">✓</span>}
-          </button>
-        ))}
-      </div>
+      <PresetPicker preset={preset} onChange={onChange} />
 
       <details className="thresholds">
         <summary>

@@ -59,6 +59,18 @@ body {
   padding: 6px 0 2px;
 }
 
+.logo-mini {
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+}
+
+.logo-hero {
+  width: 104px;
+  height: 104px;
+  border-radius: 26px;
+}
+
 .topbar h1 {
   font-size: 18px;
   font-weight: 800;
