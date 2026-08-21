@@ -67,6 +67,53 @@ function InstallCard() {
   )
 }
 
+// Elegido compacto + "cambiar": la lista de 5 solo aparece al querer cambiar.
+function VehiculoPicker({
+  vehiculo,
+  onChange,
+}: {
+  vehiculo: VehiculoId
+  onChange: (v: VehiculoId) => void
+}) {
+  const [eligiendo, setEligiendo] = useState(false)
+  const actual = VEHICULOS[vehiculo]
+
+  if (!eligiendo) {
+    return (
+      <button className="preset-card preset-slim" onClick={() => setEligiendo(true)}>
+        <span className="preset-emoji">{actual.emoji}</span>
+        <span className="preset-body">
+          <strong>{actual.nombre}</strong>
+          <span>{actual.descripcion}</span>
+        </span>
+        <span className="lugar-cambiar">cambiar</span>
+      </button>
+    )
+  }
+
+  return (
+    <div className="preset-list">
+      {Object.values(VEHICULOS).map((v) => (
+        <button
+          key={v.id}
+          className={`preset-card preset-slim ${vehiculo === v.id ? 'preset-on' : ''}`}
+          onClick={() => {
+            onChange(v.id)
+            setEligiendo(false)
+          }}
+        >
+          <span className="preset-emoji">{v.emoji}</span>
+          <span className="preset-body">
+            <strong>{v.nombre}</strong>
+            <span>{v.descripcion}</span>
+          </span>
+          {vehiculo === v.id && <span className="preset-check">✓</span>}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function Settings({
   preset,
   onChange,
@@ -89,22 +136,7 @@ export function Settings({
       </header>
 
       <p className="section-title">Tu vehículo</p>
-      <div className="preset-list">
-        {Object.values(VEHICULOS).map((v) => (
-          <button
-            key={v.id}
-            className={`preset-card preset-slim ${vehiculo === v.id ? 'preset-on' : ''}`}
-            onClick={() => onChangeVehiculo(v.id)}
-          >
-            <span className="preset-emoji">{v.emoji}</span>
-            <span className="preset-body">
-              <strong>{v.nombre}</strong>
-              <span>{v.descripcion}</span>
-            </span>
-            {vehiculo === v.id && <span className="preset-check">✓</span>}
-          </button>
-        ))}
-      </div>
+      <VehiculoPicker vehiculo={vehiculo} onChange={onChangeVehiculo} />
       <p className="settings-nota">
         Cada vehículo tiene sus propios límites de viento, lluvia y temperatura — los ves
         abajo, en "los números".
