@@ -591,7 +591,11 @@ select {
   min-width: 0;
 }
 
-/* las horas buenas no dicen nada; solo el tramo feo se tiñe, sutil */
+/* el día como chart: verde = está para ir, rosado = mejor no */
+.seg-ok {
+  background: rgba(159, 224, 182, 0.09);
+}
+
 .seg-bad {
   background: rgba(242, 169, 183, 0.13);
 }

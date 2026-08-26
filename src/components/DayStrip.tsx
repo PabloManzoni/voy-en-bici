@@ -48,7 +48,7 @@ export function DayStrip({
         {lapsos.map((seg) => (
           <div
             key={seg.hs[0].hour}
-            className={`strip-seg ${seg.ok ? '' : 'seg-bad'}`}
+            className={`strip-seg ${seg.ok ? 'seg-ok' : 'seg-bad'}`}
             style={{ flex: seg.hs.length }}
           >
             {seg.hs.map((h) => {
