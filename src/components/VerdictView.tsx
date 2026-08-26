@@ -41,6 +41,7 @@ function DayCard({
   horaActual?: number // solo HOY: para atenuar horas pasadas y mostrar "quedan X–Y"
   expandido: boolean
   onToggle: () => void
+  destacar: boolean // al entrar: pulso sobre los motivos del NO GO
 }) {
   const fIda = franjaById(recorrido.franjaIda)
   const fVuelta = franjaById(recorrido.franjaVuelta)
@@ -109,7 +110,7 @@ function DayCard({
       {expandido && modo !== 'pasado' && (
         <div className="tramos">
           <div
-            className={`tramo ${modo === 'solo-vuelta' ? 'tramo-off' : dia.ida.go ? '' : 'tramo-bad'}`}
+            className={`tramo ${modo === 'solo-vuelta' ? 'tramo-off' : dia.ida.go ? '' : `tramo-bad ${destacar ? 'tramo-pulso' : ''}`}`}
           >
             <span className="tramo-dir">→</span>
             <span className="tramo-body">
@@ -122,7 +123,7 @@ function DayCard({
               {modo === 'solo-vuelta' ? '–' : dia.ida.go ? '✓' : '✗'}
             </span>
           </div>
-          <div className={`tramo ${dia.vuelta.go ? '' : 'tramo-bad'}`}>
+          <div className={`tramo ${dia.vuelta.go ? '' : `tramo-bad ${destacar ? 'tramo-pulso' : ''}`}`}>
             <span className="tramo-dir">←</span>
             <span className="tramo-body">
               <strong>Vuelta</strong> · {fVuelta.label} ({horasDe(fVuelta)} h)
@@ -181,6 +182,13 @@ export function VerdictView({
   const [abierto, setAbierto] = useState<'hoy' | 'manana'>(() =>
     modoHoy === 'pasado' ? 'manana' : 'hoy',
   )
+
+  // Pulso de entrada sobre los motivos del NO GO: solo unos segundos al abrir.
+  const [destacar, setDestacar] = useState(true)
+  useEffect(() => {
+    const t = setTimeout(() => setDestacar(false), 3600)
+    return () => clearTimeout(t)
+  }, [])
 
   useEffect(() => {
     if (!origen || !destino) return
@@ -286,6 +294,7 @@ export function VerdictView({
           horaActual={horaActual}
           expandido={abierto === 'hoy'}
           onToggle={() => setAbierto('hoy')}
+          destacar={destacar}
         />
       )}
       {fc && dayMan && evalMan && (
@@ -301,6 +310,7 @@ export function VerdictView({
           umbrales={cfg.umbrales}
           expandido={abierto === 'manana'}
           onToggle={() => setAbierto('manana')}
+          destacar={destacar}
         />
       )}
 
