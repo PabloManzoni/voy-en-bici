@@ -121,13 +121,13 @@ export function AhoraCard({
   if (fase === 'pedir') {
     return (
       <div className="ahora-card">
-        <div className="ahora-fila">
-          <span className="ahora-texto">
-            📍 <strong>No sé dónde estás.</strong> Compartí tu ubicación para ver si da para
-            salir.
-          </span>
-        </div>
-        <button className="btn-mini" onClick={pedirUbicacion}>
+        <span className="ahora-pedir-emoji">📍</span>
+        <p className="ahora-texto">
+          <strong>No sé dónde estás.</strong>
+          <br />
+          Compartí tu ubicación para ver si da para salir.
+        </p>
+        <button className="btn-mini ahora-espaciado" onClick={pedirUbicacion}>
           Usar mi ubicación
         </button>
       </div>
@@ -140,39 +140,34 @@ export function AhoraCard({
 
   return (
     <div className={`ahora-card ${da ? 'ahora-da' : 'ahora-noda'}`}>
-      <div className="ahora-fila">
-        {hora && <WeatherIcon code={hora.code} size={26} />}
-        <span className="ahora-texto">
-          Ahora{' '}
-          {da ? (
-            <strong className="ahora-si">da para salir</strong>
-          ) : (
-            <strong className="ahora-no">no da</strong>
-          )}
-        </span>
-        {hora && (
-          <span className="ahora-temp">
-            {Math.round(hora.temp)}°
-            {hora.apparent !== undefined && Math.abs(hora.apparent - hora.temp) >= 2
-              ? ` (${Math.round(hora.apparent)}°)`
-              : ''}
-          </span>
+      {hora && <WeatherIcon code={hora.code} size={110} />}
+      <div className="ahora-texto">
+        Ahora{' '}
+        {da ? (
+          <strong className="ahora-si">da para salir</strong>
+        ) : (
+          <strong className="ahora-no">no da</strong>
         )}
       </div>
+      {hora && (
+        <div className="ahora-temp">
+          {Math.round(hora.temp)}°
+          {hora.apparent !== undefined && Math.abs(hora.apparent - hora.temp) >= 2
+            ? ` (sensación ${Math.round(hora.apparent)}°)`
+            : ''}
+        </div>
+      )}
       {!da && <div className="ahora-motivo">{motivo}</div>}
       <div className="ahora-perfil">
         {fuente === 'real' && '📍 tu zona · '}
         {v.emoji} {v.nombre} · {p.emoji} {p.nombre}
         {hora && hora.wind >= 12 && ` · viento del ${rumboCardinal(hora.windFrom)} a ${Math.round(hora.wind)} km/h`}
-        {fuente !== 'real' && (
-          <>
-            {' · '}
-            <button className="ahora-pin" onClick={pedirUbicacion}>
-              📍 usar mi ubicación
-            </button>
-          </>
-        )}
       </div>
+      {fuente !== 'real' && (
+        <button className="ahora-pin ahora-espaciado" onClick={pedirUbicacion}>
+          📍 usar mi ubicación
+        </button>
+      )}
     </div>
   )
 }

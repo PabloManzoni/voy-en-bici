@@ -168,26 +168,46 @@ body {
 }
 
 /* ── Semáforo de ahora (home) ──────────────
-   Estado, no botón: centrado y sin caja, para no parecer clickeable
-   como las tarjetas de recorridos. */
+   Estado, no botón: cuadrado 1:1 con el clima protagonista.
+   Se distingue de las tarjetas clickeables (apaisadas y compactas). */
 .ahora-card {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: 4px;
-  padding: 10px 8px 4px;
+  gap: 8px;
+  padding: 20px;
 }
 
-.ahora-fila {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
+.ahora-da {
+  background: linear-gradient(180deg, var(--mint-soft), var(--card) 70%);
+}
+
+.ahora-noda {
+  background: linear-gradient(180deg, var(--rose-soft), var(--card) 70%);
 }
 
 .ahora-texto {
-  font-size: 16px;
+  font-size: 17px;
+}
+
+.ahora-texto strong {
+  font-size: 24px;
+  display: inline-block;
+}
+
+.ahora-pedir-emoji {
+  font-size: 44px;
+}
+
+.ahora-espaciado {
+  margin-top: 14px;
 }
 
 .ahora-si {
@@ -201,7 +221,7 @@ body {
 }
 
 .ahora-temp {
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 700;
 }
 
@@ -228,11 +248,6 @@ body {
 }
 
 .ahora-skeleton {
-  min-height: 58px;
-  width: 65%;
-  margin: 0 auto;
-  border-radius: 16px;
-  background: var(--card);
   animation: pulse 1.4s ease-in-out infinite;
 }
 
