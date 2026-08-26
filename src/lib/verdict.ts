@@ -57,21 +57,21 @@ export interface Preset {
 export const PRESETS: Record<PresetId, Preset> = {
   flojo: {
     id: 'flojo',
-    nombre: 'Flojo',
+    nombre: 'Cauteloso',
     emoji: '💅',
-    descripcion: 'Salgo solo si está lindo. Ni llovizna en todo el día, ni viento pesado, ni frío.',
+    descripcion: 'Prefiero días lindos y tranquilos.',
   },
   promedio: {
     id: 'promedio',
-    nombre: 'Promedio',
+    nombre: 'Flexible',
     emoji: '👍',
-    descripcion: 'Soy un pibe común: me banco fresco y algo de viento, pero si llueve en mi horario, no salgo.',
+    descripcion: 'Tolero algo de viento, frío o lluvia.',
   },
   extremo: {
     id: 'extremo',
-    nombre: 'Extremo',
+    nombre: 'Resistente',
     emoji: '🥚',
-    descripcion: 'Salgo casi siempre, llovizna incluida. Me frenan las tormentas, las ráfagas fuertes y la lluvia en serio.',
+    descripcion: 'Solo me frenan condiciones fuertes.',
   },
 }
 

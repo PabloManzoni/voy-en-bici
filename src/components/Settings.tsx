@@ -222,16 +222,8 @@ export function Settings({
 
       <p className="section-title">Tu vehículo</p>
       <VehiculoPicker vehiculo={vehiculo} onChange={onChangeVehiculo} />
-      <p className="settings-nota">
-        Cada vehículo tiene sus propios límites de viento, lluvia y temperatura — los ves
-        abajo, en "los números".
-      </p>
 
-      <p className="section-title">Tu perfil de conductor</p>
-      <p className="settings-intro">
-        Define qué tan feo tiene que estar el día para que te diga que no.
-      </p>
-
+      <p className="section-title">Tu perfil</p>
       <PresetPicker preset={preset} onChange={onChange} />
 
       <details className="thresholds">
@@ -246,9 +238,15 @@ export function Settings({
               <thead>
                 <tr>
                   <th></th>
-                  <th>💅 Flojo</th>
-                  <th>👍 Promedio</th>
-                  <th>🥚 Extremo</th>
+                  <th>
+                    {PRESETS.flojo.emoji} {PRESETS.flojo.nombre}
+                  </th>
+                  <th>
+                    {PRESETS.promedio.emoji} {PRESETS.promedio.nombre}
+                  </th>
+                  <th>
+                    {PRESETS.extremo.emoji} {PRESETS.extremo.nombre}
+                  </th>
                 </tr>
               </thead>
               <tbody>
