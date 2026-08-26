@@ -426,6 +426,30 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.day-caret {
+  color: var(--muted);
+  font-size: 11px;
+  margin-right: 7px;
+}
+
+.day-colapsada {
+  padding: 12px 14px;
+  gap: 6px;
+}
+
+.day-colapsada .day-sub {
+  font-size: 13px;
 }
 
 .day-title {
@@ -587,6 +611,11 @@ select {
 .strip-temp {
   font-size: 10.5px;
   font-weight: 700;
+}
+
+/* horas de hoy que ya pasaron: siguen visibles pero apagadas */
+.strip-past {
+  opacity: 0.35;
 }
 
 /* flechas largas de ida (→, arriba) y vuelta (←, abajo) sobre su rango horario */

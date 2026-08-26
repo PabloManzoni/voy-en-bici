@@ -14,11 +14,13 @@ export function DayStrip({
   umbrales,
   ida,
   vuelta,
+  horaActual,
 }: {
   hours: HourData[]
   umbrales: Umbrales
   ida: Franja
   vuelta: Franja
+  horaActual?: number // solo HOY: las horas ya pasadas se atenúan
 }) {
   const [sel, setSel] = useState<number | null>(null)
   const visibles = hours.filter((h) => h.hour >= 6 && h.hour <= 22)
@@ -56,7 +58,7 @@ export function DayStrip({
                 <button
                   type="button"
                   key={h.hour}
-                  className={`strip-col ${sel === h.hour ? 'strip-sel' : ''}`}
+                  className={`strip-col ${sel === h.hour ? 'strip-sel' : ''} ${horaActual !== undefined && h.hour < horaActual ? 'strip-past' : ''}`}
                   aria-label={`Detalle de las ${h.hour}:00`}
                   onClick={() => setSel(sel === h.hour ? null : h.hour)}
                 >

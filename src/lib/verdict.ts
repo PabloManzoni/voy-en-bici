@@ -283,6 +283,17 @@ export function evalTramo(
   cfg: ConfigEval,
   mojadas?: Map<number, { mm: number; ahora: boolean }>,
 ): TramoEval {
+  // Tramo sin horas por delante (todas ya pasaron): neutro.
+  if (hours.length === 0) {
+    return {
+      go: true,
+      motivos: [],
+      temp: { min: 0, max: 0 },
+      viento: { max: 0, gustMax: 0, rel: 'cruzado' },
+      lluvia: { probMax: 0, cat: null },
+      codeDominante: 1,
+    }
+  }
   const u = cfg.umbrales
   const porTipo = new Map<MotivoTipo, Motivo>()
   for (const h of hours) {
@@ -330,14 +341,19 @@ export function horasDeFranja(dayHours: HourData[], franjaId: FranjaId): HourDat
   return dayHours.filter((h) => h.hour >= f.desde && h.hour < f.hasta)
 }
 
+// `desdeHora` (solo para HOY): las horas que ya pasaron no cuentan — si a las
+// 8 hizo un frío que ya fue y a las 10 está lindo, a las 10 el veredicto es GO.
 export function evalDia(
   dayHours: HourData[],
   franjaIda: FranjaId,
   franjaVuelta: FranjaId,
   headingIda: number,
   cfg: ConfigEval,
+  desdeHora?: number,
 ): DiaEval {
   const u = cfg.umbrales
+  const vigentes = (hs: HourData[]) =>
+    desdeHora === undefined ? hs : hs.filter((h) => h.hour >= desdeHora)
 
   // Piso mojado (si el vehículo lo mira): precomputado sobre el día entero.
   let mojadas: Map<number, { mm: number; ahora: boolean }> | undefined
@@ -349,9 +365,9 @@ export function evalDia(
     }
   }
 
-  const ida = evalTramo(horasDeFranja(dayHours, franjaIda), headingIda, cfg, mojadas)
+  const ida = evalTramo(vigentes(horasDeFranja(dayHours, franjaIda)), headingIda, cfg, mojadas)
   const vuelta = evalTramo(
-    horasDeFranja(dayHours, franjaVuelta),
+    vigentes(horasDeFranja(dayHours, franjaVuelta)),
     (headingIda + 180) % 360,
     cfg,
     mojadas,
@@ -359,7 +375,7 @@ export function evalDia(
 
   const motivosDia: Motivo[] = []
   if (u.lluviaDiaEntero) {
-    for (const h of dayHours.filter((h) => h.hour >= 6 && h.hour <= 22)) {
+    for (const h of vigentes(dayHours.filter((h) => h.hour >= 6 && h.hour <= 22))) {
       const cat = catLluvia(h.code)
       const prob = h.rainProb ?? 100
       if (cat && cat !== 'nieve' && prob >= 30) {

@@ -25,6 +25,9 @@ function DayCard({
   presetId,
   vehiculo,
   umbrales,
+  horaActual,
+  expandido,
+  onToggle,
 }: {
   titulo: string
   fecha: Date
@@ -35,6 +38,9 @@ function DayCard({
   presetId: PresetId
   vehiculo: VehiculoId
   umbrales: Umbrales
+  horaActual?: number // solo HOY: para atenuar horas pasadas y mostrar "quedan X–Y"
+  expandido: boolean
+  onToggle: () => void
 }) {
   const fIda = franjaById(recorrido.franjaIda)
   const fVuelta = franjaById(recorrido.franjaVuelta)
@@ -64,56 +70,78 @@ function DayCard({
 
   const fechaLabel = fecha.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric' })
 
-  if (modo === 'pasado') {
-    return (
-      <section className="day-card day-past">
-        <div className="day-head">
-          <span className="day-title">
-            {titulo} · <span className="muted">{fechaLabel}</span>
-          </span>
-          <span className="badge badge-past">Ya fue</span>
-        </div>
-        <p className="day-sub">El día ya terminó para la bici. Mirá mañana.</p>
-        <DayStrip hours={day.hours} umbrales={umbrales} ida={fIda} vuelta={fVuelta} />
-      </section>
-    )
-  }
+  // Rango que se muestra por franja: si estamos adentro, "quedan X–Y".
+  const horasDe = (f: typeof fIda) =>
+    horaActual !== undefined && horaActual > f.desde && horaActual < f.hasta
+      ? `quedan ${horaActual}–${f.hasta}`
+      : f.horas
 
-  const resumen = texto ?? fraseResumen(modo === 'solo-vuelta' ? { ...dia, go } : dia, modo, umbrales)
+  const resumen =
+    modo === 'pasado'
+      ? 'El día ya terminó. Mirá mañana.'
+      : (texto ?? fraseResumen(modo === 'solo-vuelta' ? { ...dia, go } : dia, modo, umbrales))
+
+  const clase =
+    modo === 'pasado' ? 'day-card day-past' : go ? 'day-card day-go' : 'day-card day-nogo'
 
   return (
-    <section className={`day-card ${go ? 'day-go' : 'day-nogo'}`}>
-      <div className="day-head">
+    <section className={`${clase} ${expandido ? '' : 'day-colapsada'}`}>
+      <button type="button" className="day-head" onClick={onToggle}>
         <span className="day-title">
+          <span className="day-caret">{expandido ? '▾' : '▸'}</span>
           {titulo} · <span className="muted">{fechaLabel}</span>
         </span>
-        <span className={`badge ${go ? 'badge-go' : 'badge-nogo'}`}>{go ? 'Sí, dale' : 'Mejor no'}</span>
-      </div>
-      <p className="day-frase">{fraseBadge(go, fecha.getDate())}</p>
+        {modo === 'pasado' ? (
+          <span className="badge badge-past">Ya fue</span>
+        ) : (
+          <span className={`badge ${go ? 'badge-go' : 'badge-nogo'}`}>
+            {go ? 'Sí, dale' : 'Mejor no'}
+          </span>
+        )}
+      </button>
+
+      {expandido && modo !== 'pasado' && (
+        <p className="day-frase">{fraseBadge(go, fecha.getDate())}</p>
+      )}
+
       <p className="day-sub">{resumen}</p>
 
-      <div className="tramos">
-        <div className={`tramo ${modo === 'solo-vuelta' ? 'tramo-off' : dia.ida.go ? '' : 'tramo-bad'}`}>
-          <span className="tramo-dir">→</span>
-          <span className="tramo-body">
-            <strong>Ida</strong> · {fIda.label} ({fIda.horas} h)
-            <span className="tramo-detalle">
-              {modo === 'solo-vuelta' ? 'ya pasó' : fraseTramo(dia.ida)}
+      {expandido && modo !== 'pasado' && (
+        <div className="tramos">
+          <div
+            className={`tramo ${modo === 'solo-vuelta' ? 'tramo-off' : dia.ida.go ? '' : 'tramo-bad'}`}
+          >
+            <span className="tramo-dir">→</span>
+            <span className="tramo-body">
+              <strong>Ida</strong> · {fIda.label} ({horasDe(fIda)} h)
+              <span className="tramo-detalle">
+                {modo === 'solo-vuelta' ? 'ya pasó' : fraseTramo(dia.ida)}
+              </span>
             </span>
-          </span>
-          <span className="tramo-mark">{modo === 'solo-vuelta' ? '–' : dia.ida.go ? '✓' : '✗'}</span>
+            <span className="tramo-mark">
+              {modo === 'solo-vuelta' ? '–' : dia.ida.go ? '✓' : '✗'}
+            </span>
+          </div>
+          <div className={`tramo ${dia.vuelta.go ? '' : 'tramo-bad'}`}>
+            <span className="tramo-dir">←</span>
+            <span className="tramo-body">
+              <strong>Vuelta</strong> · {fVuelta.label} ({horasDe(fVuelta)} h)
+              <span className="tramo-detalle">{fraseTramo(dia.vuelta)}</span>
+            </span>
+            <span className="tramo-mark">{dia.vuelta.go ? '✓' : '✗'}</span>
+          </div>
         </div>
-        <div className={`tramo ${dia.vuelta.go ? '' : 'tramo-bad'}`}>
-          <span className="tramo-dir">←</span>
-          <span className="tramo-body">
-            <strong>Vuelta</strong> · {fVuelta.label} ({fVuelta.horas} h)
-            <span className="tramo-detalle">{fraseTramo(dia.vuelta)}</span>
-          </span>
-          <span className="tramo-mark">{dia.vuelta.go ? '✓' : '✗'}</span>
-        </div>
-      </div>
+      )}
 
-      <DayStrip hours={day.hours} umbrales={umbrales} ida={fIda} vuelta={fVuelta} />
+      {expandido && (
+        <DayStrip
+          hours={day.hours}
+          umbrales={umbrales}
+          ida={fIda}
+          vuelta={fVuelta}
+          horaActual={horaActual}
+        />
+      )}
     </section>
   )
 }
@@ -136,6 +164,23 @@ export function VerdictView({
 
   const origen = recorrido?.origen
   const destino = recorrido?.destino
+
+  const ahora = new Date()
+  const horaActual = ahora.getHours()
+  const fIda = recorrido ? franjaById(recorrido.franjaIda) : null
+  const fVuelta = recorrido ? franjaById(recorrido.franjaVuelta) : null
+  const modoHoy: Modo = !fIda || !fVuelta
+    ? 'full'
+    : horaActual >= fVuelta.hasta
+      ? 'pasado'
+      : horaActual >= fIda.hasta
+        ? 'solo-vuelta'
+        : 'full'
+
+  // Acordeón: hoy expandido por defecto; si el día ya fue, mañana.
+  const [abierto, setAbierto] = useState<'hoy' | 'manana'>(() =>
+    modoHoy === 'pasado' ? 'manana' : 'hoy',
+  )
 
   useEffect(() => {
     if (!origen || !destino) return
@@ -169,18 +214,13 @@ export function VerdictView({
 
   const cfg: ConfigEval = useMemo(() => configEval(vehiculo, preset), [vehiculo, preset])
 
+  // HOY: las horas que ya pasaron no cuentan para el veredicto.
   const evalHoy = dayHoy
-    ? evalDia(dayHoy.hours, recorrido.franjaIda, recorrido.franjaVuelta, heading, cfg)
+    ? evalDia(dayHoy.hours, recorrido.franjaIda, recorrido.franjaVuelta, heading, cfg, horaActual)
     : null
   const evalMan = dayMan
     ? evalDia(dayMan.hours, recorrido.franjaIda, recorrido.franjaVuelta, heading, cfg)
     : null
-
-  const ahora = new Date()
-  const fIda = franjaById(recorrido.franjaIda)
-  const fVuelta = franjaById(recorrido.franjaVuelta)
-  const modoHoy: Modo =
-    ahora.getHours() >= fVuelta.hasta ? 'pasado' : ahora.getHours() >= fIda.hasta ? 'solo-vuelta' : 'full'
 
   const manana = new Date(ahora)
   manana.setDate(manana.getDate() + 1)
@@ -243,6 +283,9 @@ export function VerdictView({
           presetId={preset}
           vehiculo={vehiculo}
           umbrales={cfg.umbrales}
+          horaActual={horaActual}
+          expandido={abierto === 'hoy'}
+          onToggle={() => setAbierto('hoy')}
         />
       )}
       {fc && dayMan && evalMan && (
@@ -256,6 +299,8 @@ export function VerdictView({
           presetId={preset}
           vehiculo={vehiculo}
           umbrales={cfg.umbrales}
+          expandido={abierto === 'manana'}
+          onToggle={() => setAbierto('manana')}
         />
       )}
 

@@ -195,6 +195,29 @@ describe('matriz por vehículo (casos del doc de investigación)', () => {
   })
 })
 
+describe('las horas pasadas no cuentan (caso del 26/08)', () => {
+  it('frío a las 8-9 pero lindo a las 10: a las 10 el veredicto es GO', () => {
+    const day = mkDay([
+      { hour: 8, temp: 8, apparent: 3 },
+      { hour: 9, temp: 8, apparent: 3 },
+      { hour: 10, temp: 11, apparent: 8 },
+    ])
+    const cfg = configEval('bici', 'promedio')
+    // sin hora actual (mañana, o recién arranca el día): NO GO por las 8-9
+    expect(evalDia(day, 'manana', 'tarde', 90, cfg).go).toBe(false)
+    // a las 10, las 8-9 ya son historia: GO
+    expect(evalDia(day, 'manana', 'tarde', 90, cfg, 10).go).toBe(true)
+  })
+
+  it('el flojo tampoco carga con la llovizna que ya pasó', () => {
+    const day = mkDay([{ hour: 13, code: 53, rainProb: 50 }])
+    const cfg = configEval('bici', 'flojo')
+    expect(evalDia(day, 'manana', 'tarde', 90, cfg).go).toBe(false)
+    // a las 14, la llovizna del mediodía ya fue
+    expect(evalDia(day, 'manana', 'tarde', 90, cfg, 14).go).toBe(true)
+  })
+})
+
 describe('viento relativo', () => {
   it('viento que viene de donde vas = de frente', () => {
     expect(windRel(90, 90)).toBe('frente')
