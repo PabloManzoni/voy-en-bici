@@ -167,36 +167,27 @@ body {
   cursor: pointer;
 }
 
-/* ── Semáforo de ahora (home) ────────────── */
+/* ── Semáforo de ahora (home) ──────────────
+   Estado, no botón: centrado y sin caja, para no parecer clickeable
+   como las tarjetas de recorridos. */
 .ahora-card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 12px 15px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-}
-
-.ahora-da {
-  border-color: var(--mint-line);
-  background: linear-gradient(180deg, var(--mint-soft), var(--card) 70%);
-}
-
-.ahora-noda {
-  border-color: var(--rose-line);
-  background: linear-gradient(180deg, var(--rose-soft), var(--card) 70%);
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 10px 8px 4px;
 }
 
 .ahora-fila {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 9px;
 }
 
 .ahora-texto {
-  flex: 1;
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .ahora-si {
@@ -210,7 +201,7 @@ body {
 }
 
 .ahora-temp {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -237,7 +228,11 @@ body {
 }
 
 .ahora-skeleton {
-  min-height: 62px;
+  min-height: 58px;
+  width: 65%;
+  margin: 0 auto;
+  border-radius: 16px;
+  background: var(--card);
   animation: pulse 1.4s ease-in-out infinite;
 }
 
