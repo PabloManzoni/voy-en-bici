@@ -1,9 +1,18 @@
-import type { Recorrido } from '../types'
+import type { PresetId, Recorrido, VehiculoId } from '../types'
 import { franjaById } from '../lib/franjas'
 import { nav } from '../App'
+import { AhoraCard } from './AhoraCard'
 import { ChevronIcon, GearIcon, PencilIcon } from './Icons'
 
-export function Home({ recorridos }: { recorridos: Recorrido[] }) {
+export function Home({
+  recorridos,
+  vehiculo,
+  preset,
+}: {
+  recorridos: Recorrido[]
+  vehiculo: VehiculoId
+  preset: PresetId
+}) {
   return (
     <>
       <header className="topbar">
@@ -14,6 +23,8 @@ export function Home({ recorridos }: { recorridos: Recorrido[] }) {
           <GearIcon />
         </button>
       </header>
+
+      <AhoraCard recorridos={recorridos} vehiculo={vehiculo} preset={preset} />
 
       {recorridos.length === 0 ? (
         <div className="empty">

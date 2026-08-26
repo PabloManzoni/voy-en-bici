@@ -90,7 +90,7 @@ export default function App() {
       />
     )
   } else {
-    view = <Home recorridos={recorridos} />
+    view = <Home recorridos={recorridos} vehiculo={vehiculo} preset={preset} />
   }
 
   return <div className="app">{view}</div>

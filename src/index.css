@@ -167,6 +167,69 @@ body {
   cursor: pointer;
 }
 
+/* ── Semáforo de ahora (home) ────────────── */
+.ahora-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ahora-da {
+  border-color: var(--mint-line);
+  background: linear-gradient(180deg, var(--mint-soft), var(--card) 70%);
+}
+
+.ahora-noda {
+  border-color: var(--rose-line);
+  background: linear-gradient(180deg, var(--rose-soft), var(--card) 70%);
+}
+
+.ahora-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ahora-texto {
+  flex: 1;
+  font-size: 15px;
+}
+
+.ahora-si {
+  color: var(--mint);
+  font-weight: 800;
+}
+
+.ahora-no {
+  color: var(--rose);
+  font-weight: 800;
+}
+
+.ahora-temp {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.ahora-motivo {
+  color: var(--rose);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ahora-perfil {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.ahora-skeleton {
+  min-height: 62px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
 /* ── Home ────────────────────────────────── */
 .route-list {
   display: flex;
