@@ -86,9 +86,23 @@ function DayCard({
   const clase =
     modo === 'pasado' ? 'day-card day-past' : go ? 'day-card day-go' : 'day-card day-nogo'
 
+  // Colapsada: toda la tarjeta es el botón de expandir. Expandida: inerte
+  // (siempre se toca la otra), sin hover ni click.
   return (
-    <section className={`${clase} ${expandido ? '' : 'day-colapsada'}`}>
-      <button type="button" className="day-head" onClick={onToggle}>
+    <section
+      className={`${clase} ${expandido ? '' : 'day-colapsada'}`}
+      role={expandido ? undefined : 'button'}
+      tabIndex={expandido ? undefined : 0}
+      onClick={expandido ? undefined : onToggle}
+      onKeyDown={
+        expandido
+          ? undefined
+          : (e) => {
+              if (e.key === 'Enter' || e.key === ' ') onToggle()
+            }
+      }
+    >
+      <div className="day-head">
         <span className="day-title">
           <span className="day-caret">{expandido ? '▾' : '▸'}</span>
           {titulo} · <span className="muted">{fechaLabel}</span>
@@ -100,7 +114,7 @@ function DayCard({
             {go ? 'Sí, dale' : 'Mejor no'}
           </span>
         )}
-      </button>
+      </div>
 
       {expandido && modo !== 'pasado' && (
         <p className="day-frase">{fraseBadge(go, fecha.getDate())}</p>

@@ -70,6 +70,19 @@ export function marcarOnboarded(): void {
   localStorage.setItem(K_ONBOARDED, '1')
 }
 
+const K_UBICACION = 'vb.ubicacion'
+
+// El usuario tocó "usar mi ubicación" y el permiso fue concedido:
+// de ahí en más el semáforo se calcula de donde esté, en silencio.
+export function loadUbicacion(): boolean {
+  return localStorage.getItem(K_UBICACION) === '1'
+}
+
+export function marcarUbicacion(activa: boolean): void {
+  if (activa) localStorage.setItem(K_UBICACION, '1')
+  else localStorage.removeItem(K_UBICACION)
+}
+
 export function loadVehiculo(): VehiculoId {
   const v = localStorage.getItem(K_VEHICULO)
   return v === 'deportivo' || v === 'ebike' || v === 'monopatin' || v === 'moto' ? v : 'bici'

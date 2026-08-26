@@ -225,6 +225,17 @@ body {
   font-size: 12.5px;
 }
 
+.ahora-pin {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--sky);
+  cursor: pointer;
+}
+
 .ahora-skeleton {
   min-height: 62px;
   animation: pulse 1.4s ease-in-out infinite;
@@ -490,14 +501,6 @@ select {
   justify-content: space-between;
   gap: 10px;
   width: 100%;
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  font-family: inherit;
-  color: inherit;
-  cursor: pointer;
-  text-align: left;
 }
 
 .day-caret {
@@ -509,6 +512,14 @@ select {
 .day-colapsada {
   padding: 12px 14px;
   gap: 6px;
+  cursor: pointer;
+}
+
+/* hover mínimo, solo en dispositivos con puntero (desktop) */
+@media (hover: hover) {
+  .day-colapsada:hover {
+    filter: brightness(1.15);
+  }
 }
 
 .day-colapsada .day-sub {

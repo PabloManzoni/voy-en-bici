@@ -6,13 +6,43 @@ import { motivoFrase } from '../lib/explain'
 import { getForecast, hoyLocal } from '../lib/weather'
 import { puntoMedio, rumboCardinal } from '../lib/geo'
 import { tzUsuario } from '../lib/geocoding'
+import { loadUbicacion, marcarUbicacion } from '../lib/storage'
 import { WeatherIcon } from './Icons'
 
 const MONTEVIDEO = { lat: -34.905, lon: -56.19 }
 
-// Semáforo de AHORA en la home: ¿da para salir en este momento?
-// Independiente de recorridos (sin dirección de viento ni franjas).
-// Usa el mismo cache de clima que los recorridos: una sola llamada cada 30 min.
+type Fuente = 'real' | 'recorrido' | 'ciudad'
+
+// Ubicación del semáforo, en orden de preferencia:
+// 1) la real, si el usuario alguna vez tocó "usar mi ubicación" (precisión
+//    baja: alcanza para clima y no gasta batería; si falla, cae al siguiente);
+// 2) el punto del primer recorrido (comparte el cache de clima con él);
+// 3) Montevideo, si la zona horaria es de Uruguay;
+// 4) nada → se muestra el pedido de ubicación.
+async function resolverCoords(
+  recorridos: Recorrido[],
+): Promise<{ lat: number; lon: number; fuente: Fuente } | null> {
+  if (loadUbicacion() && 'geolocation' in navigator) {
+    try {
+      const pos = await new Promise<GeolocationPosition>((res, rej) =>
+        navigator.geolocation.getCurrentPosition(res, rej, {
+          enableHighAccuracy: false,
+          timeout: 4000,
+          maximumAge: 10 * 60 * 1000,
+        }),
+      )
+      return { lat: pos.coords.latitude, lon: pos.coords.longitude, fuente: 'real' }
+    } catch (e) {
+      // permiso revocado: volver a ofrecer el botón
+      if ((e as GeolocationPositionError)?.code === 1) marcarUbicacion(false)
+    }
+  }
+  const r = recorridos[0]
+  if (r) return { ...puntoMedio(r.origen, r.destino), fuente: 'recorrido' }
+  if (tzUsuario() === 'America/Montevideo') return { ...MONTEVIDEO, fuente: 'ciudad' }
+  return null
+}
+
 export function AhoraCard({
   recorridos,
   vehiculo,
@@ -22,30 +52,29 @@ export function AhoraCard({
   vehiculo: VehiculoId
   preset: PresetId
 }) {
-  const [estado, setEstado] = useState<'cargando' | 'listo' | 'error'>('cargando')
+  const [fase, setFase] = useState<'cargando' | 'listo' | 'pedir' | 'nada'>('cargando')
+  const [fuente, setFuente] = useState<Fuente>('ciudad')
   const [hora, setHora] = useState<HourData | null>(null)
   const [motivo, setMotivo] = useState<string | null>(null)
-
-  // Ubicación: el punto del primer recorrido (comparte cache con su veredicto);
-  // sin recorridos, Montevideo — y fuera de Uruguay sin recorridos, nada.
-  const r = recorridos[0]
-  const coords = r
-    ? puntoMedio(r.origen, r.destino)
-    : tzUsuario() === 'America/Montevideo'
-      ? MONTEVIDEO
-      : null
+  const [tick, setTick] = useState(0)
 
   useEffect(() => {
-    if (!coords) return
     let vivo = true
-    setEstado('cargando')
-    getForecast(coords.lat, coords.lon)
-      .then((fc) => {
+    setFase('cargando')
+    ;(async () => {
+      const coords = await resolverCoords(recorridos)
+      if (!vivo) return
+      if (!coords) {
+        setFase('pedir')
+        return
+      }
+      try {
+        const fc = await getForecast(coords.lat, coords.lon)
         if (!vivo) return
         const dia = fc.days.find((d) => d.date === hoyLocal())
         const h = dia?.hours.find((x) => x.hour === new Date().getHours())
         if (!dia || !h) {
-          setEstado('error')
+          setFase('nada')
           return
         }
         const cfg = configEval(vehiculo, preset)
@@ -56,19 +85,53 @@ export function AhoraCard({
         }
         setHora(h)
         setMotivo(motivos.length > 0 ? motivoFrase(motivos[0]) : null)
-        setEstado('listo')
-      })
-      .catch(() => vivo && setEstado('error'))
+        setFuente(coords.fuente)
+        setFase('listo')
+      } catch {
+        if (vivo) setFase('nada')
+      }
+    })()
     return () => {
       vivo = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coords?.lat, coords?.lon, vehiculo, preset])
+  }, [tick, vehiculo, preset, recorridos.length])
 
-  if (!coords || estado === 'error') return null
+  // El toque del botón ES el gesto que dispara el popup de permiso del navegador.
+  const pedirUbicacion = () => {
+    if (!('geolocation' in navigator)) return
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        marcarUbicacion(true)
+        setTick((t) => t + 1)
+      },
+      () => {
+        // denegado o falló: no insistimos; el botón queda para otro intento
+      },
+      { enableHighAccuracy: false, timeout: 8000 },
+    )
+  }
 
-  if (estado === 'cargando' || !hora) {
+  if (fase === 'nada') return null
+
+  if (fase === 'cargando') {
     return <div className="ahora-card ahora-skeleton" aria-hidden="true" />
+  }
+
+  if (fase === 'pedir') {
+    return (
+      <div className="ahora-card">
+        <div className="ahora-fila">
+          <span className="ahora-texto">
+            📍 <strong>No sé dónde estás.</strong> Compartí tu ubicación para ver si da para
+            salir.
+          </span>
+        </div>
+        <button className="btn-mini" onClick={pedirUbicacion}>
+          Usar mi ubicación
+        </button>
+      </div>
+    )
   }
 
   const da = motivo === null
@@ -78,21 +141,37 @@ export function AhoraCard({
   return (
     <div className={`ahora-card ${da ? 'ahora-da' : 'ahora-noda'}`}>
       <div className="ahora-fila">
-        <WeatherIcon code={hora.code} size={26} />
+        {hora && <WeatherIcon code={hora.code} size={26} />}
         <span className="ahora-texto">
-          Ahora {da ? <strong className="ahora-si">da para salir</strong> : <strong className="ahora-no">no da</strong>}
+          Ahora{' '}
+          {da ? (
+            <strong className="ahora-si">da para salir</strong>
+          ) : (
+            <strong className="ahora-no">no da</strong>
+          )}
         </span>
-        <span className="ahora-temp">
-          {Math.round(hora.temp)}°
-          {hora.apparent !== undefined && Math.abs(hora.apparent - hora.temp) >= 2
-            ? ` (${Math.round(hora.apparent)}°)`
-            : ''}
-        </span>
+        {hora && (
+          <span className="ahora-temp">
+            {Math.round(hora.temp)}°
+            {hora.apparent !== undefined && Math.abs(hora.apparent - hora.temp) >= 2
+              ? ` (${Math.round(hora.apparent)}°)`
+              : ''}
+          </span>
+        )}
       </div>
       {!da && <div className="ahora-motivo">{motivo}</div>}
       <div className="ahora-perfil">
+        {fuente === 'real' && '📍 tu zona · '}
         {v.emoji} {v.nombre} · {p.emoji} {p.nombre}
-        {hora.wind >= 12 && ` · viento del ${rumboCardinal(hora.windFrom)} a ${Math.round(hora.wind)} km/h`}
+        {hora && hora.wind >= 12 && ` · viento del ${rumboCardinal(hora.windFrom)} a ${Math.round(hora.wind)} km/h`}
+        {fuente !== 'real' && (
+          <>
+            {' · '}
+            <button className="ahora-pin" onClick={pedirUbicacion}>
+              📍 usar mi ubicación
+            </button>
+          </>
+        )}
       </div>
     </div>
   )
