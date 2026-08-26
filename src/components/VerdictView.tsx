@@ -28,6 +28,7 @@ function DayCard({
   horaActual,
   expandido,
   onToggle,
+  destacar,
 }: {
   titulo: string
   fecha: Date
