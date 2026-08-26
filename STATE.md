@@ -65,6 +65,19 @@ funciona igual con explicaciones de plantilla.
 "Al trabajo": El Pinar → Punta Gorda, ida Mañana (8-11), vuelta Tarde (17-20).
 (Vive en el localStorage del navegador de prueba, no en el código.)
 
+## Sesión 26/08 — afinado con uso real
+
+- Las horas pasadas de HOY no cuentan (caso real: frío matutino ya ido bloqueaba a las 10:04).
+- Tarjetas hoy/mañana como acordeón exclusivo (colapsada: día+badge+resumen; entera clickeable
+  con hover sutil; la expandida es inerte). Badges fijos: "Hoy sí/no", "Mañana sí/no".
+- Tira del día: verde=se puede / rosado=no + pulso de entrada en las bandas rosadas.
+- Semáforo de AHORA en la home: cuadrado 1:1, clima protagonista, veredicto del instante con
+  vehículo+perfil; ubicación real opcional (permiso a pedido con pin 📍, recordado, precisión
+  baja, fallback recorrido→Montevideo). Comparte el cache de clima (30 min) con el recorrido.
+- Perfiles renombrados: 💅 Cauteloso / 👍 Flexible / 🥚 Resistente. Ajustes sin párrafos extra.
+- Incidente GitHub (caída parcial 26/08): triggers de push perdidos un rato — los deploys se
+  recuperaron con `gh workflow run deploy.yml` manual.
+
 ## v1 declarada estable (21/08) — decisiones de rumbo
 
 - **Sigue 100% PWA estática, sin servidor** (decisión de Pablo): notificaciones push

@@ -111,7 +111,7 @@ function DayCard({
           <span className="badge badge-past">Ya fue</span>
         ) : (
           <span className={`badge ${go ? 'badge-go' : 'badge-nogo'}`}>
-            {go ? 'Sí, dale' : 'Mejor no'}
+            {titulo} {go ? 'sí' : 'no'}
           </span>
         )}
       </div>
