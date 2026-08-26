@@ -15,12 +15,14 @@ export function DayStrip({
   ida,
   vuelta,
   horaActual,
+  destacar,
 }: {
   hours: HourData[]
   umbrales: Umbrales
   ida: Franja
   vuelta: Franja
   horaActual?: number // solo HOY: las horas ya pasadas se atenúan
+  destacar?: boolean // al entrar: las bandas rosadas laten unos segundos
 }) {
   const [sel, setSel] = useState<number | null>(null)
   const visibles = hours.filter((h) => h.hour >= 6 && h.hour <= 22)
@@ -48,7 +50,7 @@ export function DayStrip({
         {lapsos.map((seg) => (
           <div
             key={seg.hs[0].hour}
-            className={`strip-seg ${seg.ok ? 'seg-ok' : 'seg-bad'}`}
+            className={`strip-seg ${seg.ok ? 'seg-ok' : `seg-bad ${destacar ? 'seg-pulso' : ''}`}`}
             style={{ flex: seg.hs.length }}
           >
             {seg.hs.map((h) => {

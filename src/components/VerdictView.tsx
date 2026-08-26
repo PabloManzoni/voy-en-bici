@@ -111,7 +111,7 @@ function DayCard({
       {expandido && modo !== 'pasado' && (
         <div className="tramos">
           <div
-            className={`tramo ${modo === 'solo-vuelta' ? 'tramo-off' : dia.ida.go ? '' : `tramo-bad ${destacar ? 'tramo-pulso' : ''}`}`}
+            className={`tramo ${modo === 'solo-vuelta' ? 'tramo-off' : dia.ida.go ? '' : 'tramo-bad'}`}
           >
             <span className="tramo-dir">→</span>
             <span className="tramo-body">
@@ -124,7 +124,7 @@ function DayCard({
               {modo === 'solo-vuelta' ? '–' : dia.ida.go ? '✓' : '✗'}
             </span>
           </div>
-          <div className={`tramo ${dia.vuelta.go ? '' : `tramo-bad ${destacar ? 'tramo-pulso' : ''}`}`}>
+          <div className={`tramo ${dia.vuelta.go ? '' : 'tramo-bad'}`}>
             <span className="tramo-dir">←</span>
             <span className="tramo-body">
               <strong>Vuelta</strong> · {fVuelta.label} ({horasDe(fVuelta)} h)
@@ -142,6 +142,7 @@ function DayCard({
           ida={fIda}
           vuelta={fVuelta}
           horaActual={horaActual}
+          destacar={destacar}
         />
       )}
     </section>
