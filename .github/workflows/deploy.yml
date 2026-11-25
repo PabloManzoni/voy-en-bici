@@ -30,8 +30,9 @@ jobs:
         env:
           # con dominio propio (bici.tuggsy.com) la app vive en la raíz
           BASE_PATH: /
-          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
-          VITE_GEMINI_MODEL: gemini-2.5-flash
+          # URL pública de nuestro servidor de IA. NO es un secreto.
+          # Regla: acá nunca va una API key (Vite compila todo VITE_* dentro del JS público).
+          VITE_IA_URL: https://ia.tuggsy.com
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

@@ -54,11 +54,9 @@ function DayCard({
   useEffect(() => {
     if (modo === 'pasado') return
     let vivo = true
-    const etiqueta = `${titulo.toLowerCase()} ${fecha.toLocaleDateString('es-UY', { weekday: 'long' })}`
     explicacionIA({
-      etiquetaDia: etiqueta,
-      recorrido: `${recorrido.origen.nombre} → ${recorrido.destino.nombre}`,
-      vehiculo: VEHICULOS[vehiculo].nombre,
+      cuando: titulo.toLowerCase().startsWith('mañana') ? 'manana' : 'hoy',
+      vehiculo,
       dia: modo === 'solo-vuelta' ? { ...dia, go } : dia,
       presetId,
       modo: modo === 'solo-vuelta' ? 'solo-vuelta' : 'full',
