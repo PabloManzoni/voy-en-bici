@@ -22,7 +22,7 @@ tocan. Deploy automático: push a `main` → GitHub Actions buildea y publica.
 
 **IA (desde 24/11/2026): la app no tiene ninguna API key.** Le manda los datos del día a
 nuestro servidor `https://ia.tuggsy.com` (carpeta `Public/tuggsy-ia`, ver su STATE.md), que
-arma el prompt y llama a Claude (Haiku 5.5) con tope de 50 frases por día. La URL del
+arma el prompt y llama a Gemini (`gemini-3.8-flash`, key de un proyecto **sin facturación**: costo $0) con tope de 50 frases por día. La URL del
 servidor (`VITE_IA_URL`) es pública, no es un secreto.
 
 > **Incidente 21/11/2026.** La key de Gemini iba en `VITE_GEMINI_API_KEY`: Vite la compilaba
@@ -52,7 +52,7 @@ servidor (`VITE_IA_URL`) es pública, no es un secreto.
   en zona amarilla (≥75% del límite) → NO GO explicado. El viento **de cola no cuenta**
   (empuja, no resta) — dirección evaluada por tramo, ida y vuelta por separado
 - ✅ Clima: Open-Meteo (gratis, sin key), cache 30 min en localStorage, fallback a datos viejos sin red
-- ✅ Explicaciones: plantillas al instante (`explain.ts`) + Claude las reemplaza async vía `ia.tuggsy.com` (`ai.ts`), cache por contenido
+- ✅ Explicaciones: plantillas al instante (`explain.ts`) + Gemini las reemplaza async vía `ia.tuggsy.com` (`ai.ts`), cache por contenido
 - ✅ Viento relativo: rumbo del recorrido vs dirección del viento → de frente / cruzado / de cola (solo narra, no decide)
 - ✅ Grafiquita del día (6-22h) con franjas resaltadas
 - ✅ Hoy con ida ya pasada → evalúa solo la vuelta; día terminado → "Ya fue"
@@ -66,7 +66,7 @@ npm --prefix voy-en-bici run dev   # puerto 5183 (o preview "voy-en-bici" en lau
 ```
 
 `.env.local` tiene `VITE_IA_URL=http://localhost:8787` (el servidor de IA local: preview
-"tuggsy-ia" en launch.json, que usa un Claude simulado y no gasta). Sin esa variable, la app
+"tuggsy-ia" en launch.json, que usa un Gemini simulado y no gasta). Sin esa variable, la app
 funciona igual con explicaciones de plantilla.
 
 ## Recorrido de prueba cargado
@@ -106,7 +106,7 @@ funciona igual con explicaciones de plantilla.
 
 - Vite + React + TS, sin router (hash casero en `App.tsx`), sin base de datos. El único
   backend es el servidor de IA compartido (`tuggsy-ia`).
-- El LLM **nunca decide** el veredicto: reglas puras y testeadas deciden; Claude solo redacta
+- El LLM **nunca decide** el veredicto: reglas puras y testeadas deciden; la IA solo redacta
   (sin thinking, timeout 8s, si falla o corta por tope queda la plantilla).
 - A la IA van solo datos del clima ya evaluados. Los nombres de los lugares del recorrido
   no salen del dispositivo.

@@ -319,7 +319,7 @@ export function Settings({
       <InstallCard />
 
       <p className="settings-footer">
-        Clima por Open-Meteo · Explicaciones {iaDisponible() ? 'redactadas con IA (Claude)' : 'automáticas'}
+        Clima por Open-Meteo · Explicaciones {iaDisponible() ? 'redactadas con IA (Gemini)' : 'automáticas'}
       </p>
     </>
   )
